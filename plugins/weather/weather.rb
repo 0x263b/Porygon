@@ -35,7 +35,7 @@ class Weather
 
 			# Yahoo weather requires a WOEID
 			# This service lets you look up a location and gives a WOEID back
-			url = Nokogiri::XML(open("http://where.yahooapis.com/v1/places.q('#{argument}')?appid=NNX2aErV34GtMtnxo1hu1Bk_aIpuf6M3olFfsSCuioHahzWMcgHAKkFP3lBwBxOiAz1TVpQ-").read)
+			url = Nokogiri::XML(open("http://where.yahooapis.com/v1/places.q('#{argument}')?appid=#{$YAHOO}").read)
 			woeid       = url.css('woeid').text
 
 			url = Nokogiri::XML(open("http://weather.yahooapis.com/forecastrss?w=#{woeid}&u=c").read)

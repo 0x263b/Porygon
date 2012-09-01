@@ -50,7 +50,7 @@ $BITLYAPI 	   = ""
 $LASTFMAPI 	   = ""
 $WOLFRAMAPI    = ""
 
-$YAHOO         = "NNX2aErV34GtMtnxo1hu1Bk_aIpuf6M3olFfsSCuioHahzWMcgHAKkFP3lBwBxOiAz1TVpQ-"
+$YAHOO         = ""
 
 DBFILE = ""
 DataMapper.setup(:default, "sqlite3://" + DBFILE)
