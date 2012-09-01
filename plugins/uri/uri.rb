@@ -117,7 +117,10 @@ class Uri
 							reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub("</span>", "").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
 							reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
 							image     = doc.search("//span[@id='fT#{postnumber}']/a[1]/@href").text
-							date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']").text
+							date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']/@data-utc").text
+
+							date = Time.at(date.to_i)
+							date = minutes_in_words(date)
 
 							subject = subject+" " if subject != ""
 							reply = " 3| "+reply if reply != ""
@@ -126,7 +129,7 @@ class Uri
 							flag = flag+" " if flag.length > 1
 							capcode = " "+capcode if capcode.length > 1
 
-							m.reply "4chan 3| %s3%s%s%s %s%s No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
+							m.reply "4chan 3| %s3%s%s%s %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
 
 						else # Board Index Title
 							page = @agent.get(link)
