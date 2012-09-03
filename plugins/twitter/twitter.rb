@@ -18,35 +18,35 @@ class Twitter
 			if words > 1
 				"#{words.to_s} hours ago"
 			else
-				"#{words.to_s} hour ago"
+				"an hour ago"
 			end
 		when 1440..11519     
 			words = (minutes/1440)
 			if words > 1
 				"#{words.to_s} days ago"
 			else
-				"#{words.to_s} day ago"
+				"yesterday"
 			end
 		when 11520..43199    
 			words = (minutes/11520)
 			if words > 1
 				"#{words.to_s} weeks ago"
 			else
-				"#{words.to_s} week ago"
+				"last week"
 			end
 		when 43200..525599   
 			words = (minutes/43200)
 			if words > 1
 				"#{words.to_s} months ago"
 			else
-				"#{words.to_s} month ago"
+				"last month"
 			end
 		else                      
 			words = (minutes/525600)
 			if words > 1
 				"#{words.to_s} years ago"
 			else
-				"#{words.to_s} year ago"
+				"Last year"
 			end
 		end
 	end

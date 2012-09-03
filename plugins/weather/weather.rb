@@ -43,7 +43,6 @@ class Weather
 			region      = url.xpath("//yweather:location/@region")
 			condition   = url.xpath("//yweather:condition/@text")
 			temp        = url.xpath("//yweather:condition/@temp")
-			#chill       = url.xpath("//yweather:wind/@chill")
 			humidity    = url.xpath("//yweather:atmosphere/@humidity")
 			speed       = url.xpath("//yweather:wind/@speed")
 
