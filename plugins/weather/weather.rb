@@ -37,6 +37,17 @@ class Weather
 			# This service lets you look up a location and gives a WOEID back
 			url = Nokogiri::XML(open("http://where.yahooapis.com/v1/places.q('#{argument}')?appid=#{$YAHOO}").read)
 			woeid       = url.css('woeid').text
+			country     = url.css('country')[0]['code']
+
+			# Since amerifats still live in the 1800s we have to give them Fahrenheit
+			if country == "US"
+				unit = "f"
+				units = "\u00B0F"
+			else
+				unit = "c"
+				units = "\u00B0C"
+			end
+			
 
 			url = Nokogiri::XML(open("http://weather.yahooapis.com/forecastrss?w=#{woeid}&u=c").read)
 			city        = url.xpath("//yweather:location/@city")
