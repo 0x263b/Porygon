@@ -49,7 +49,7 @@ class Uri
 			if words > 1
 				"#{words.to_s} years ago"
 			else
-				"Last year"
+				"last year"
 			end
 		end
 	end
