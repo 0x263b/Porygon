@@ -14,7 +14,7 @@ class Youtube
 		elsif seconds > 59
 			length = [seconds/60 % 60, seconds % 60].join('m')+"s"
 		else
-			length = length+"s"
+			length = "#{seconds}s"
 		end
 	end
 
@@ -48,7 +48,7 @@ class Youtube
 
 				length = length_in_minutes(length.to_i)
 
-				"YouTube 4| \"%s\" 4| %s 4| %s views 4| %s/5 (%s|%s) 4| http://youtu.be/%s 4| More results: %s" % [name, length, views, rating[0..2], likes, dislikes, id, @page_url.shorten]
+				"YouTube 5| \"%s\" 5| %s 5| %s views 5| %s/5 (%s|%s) 5| http://youtu.be/%s 5| More results: %s" % [name, length, views, rating[0..2], likes, dislikes, id, @page_url.shorten]
 			end
 		
 			m.reply search(1)

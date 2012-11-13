@@ -40,17 +40,19 @@ $BOTURL        = "http://developers.im/help"
 $BOTGIT        = "https://github.com/ibkshash/Porygon"
 
 # API Keys
-$BINGAPI       = ""
+#$BINGAPI       = "" Fuck bing, man
 
-$AZUREU        = ""
+$AZUREU        = "" # For translate.rb
 $AZUREP        = ""
 
-$BITLYUSER 	   = ""
+$BITLYUSER 	   = "" # For everything basically
 $BITLYAPI 	   = ""
+
 $LASTFMAPI 	   = ""
+
 $WOLFRAMAPI    = ""
 
-$YAHOO         = ""
+$YAHOO         = "" # For weather
 
 DBFILE = ""
 DataMapper.setup(:default, "sqlite3://" + DBFILE)

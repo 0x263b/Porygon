@@ -54,6 +54,18 @@ class Uri
 		end
 	end
 
+	def length_in_minutes(seconds)
+		return nil if seconds < 0
+
+		if seconds > 3599
+			length = [seconds/3600, seconds/60 % 60, seconds % 60].map{|t| t.to_s.rjust(2,'0')}.join(':')
+		elsif seconds > 59
+			length = [seconds/60 % 60, seconds % 60].join('m')+"s"
+		else
+			length = "#{seconds}s"
+		end
+	end
+
 	# Only react in a channel
 	listen_to :channel
 	def listen(m)
@@ -63,12 +75,14 @@ class Uri
 
 			uri = URI.parse(link)
 
+			Channel("#porygon").send "#{m.channel.to_s} #{m.user.nick} | #{link}"
+
 			begin
 
 				if(@agent.nil?)
 					@agent = Mechanize.new { |agent|
-						agent.user_agent_alias    = "Windows IE 7"
-						agent.follow_meta_refresh = true
+						agent.user_agent_alias    = "Windows Mozilla"
+						agent.follow_meta_refresh = false
 						agent.redirect_ok         = true
 						agent.verify_mode         = OpenSSL::SSL::VERIFY_NONE
 						agent.keep_alive          = false
@@ -86,13 +100,26 @@ class Uri
 				end
 
 				begin
-					page = @agent.head link
+					http = Net::HTTP.new(uri.host, uri.port)
+
+					if link.start_with?("https")
+						http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+						http.use_ssl = true						
+					end
+
+					http.open_timeout = 6 # in seconds
+					http.read_timeout = 6 # in seconds
+
+					request = Net::HTTP::Head.new(uri.request_uri)
+					request.initialize_http_header({"User-Agent" => "Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20100101 Firefox/14.0.1"})
+
+					response = http.request(request)
 				rescue
 					page = @agent.get link
 				end
 
 				# Title
-				if page.header['content-type'].include? "html"
+				if response["content-type"].to_s.include? "text/html" and response.code != "400"
 
 					case uri.host
 
@@ -199,6 +226,34 @@ class Uri
 							m.reply "Title 3| Twitter 3| twitter.com"
 						end
 
+					when "www.youtube.com", "youtu.be"
+						regex = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
+
+						begin
+							ytAPI = Nokogiri::XML(open("http://gdata.youtube.com/feeds/api/videos/#{link.match(regex)[1]}?v=2").read)
+
+							name       = ytAPI.xpath("//media:title").text
+							views      = ytAPI.xpath("//yt:statistics/@viewCount").text
+							likes      = ytAPI.xpath("//yt:rating/@numLikes").text
+							dislikes   = ytAPI.xpath("//yt:rating/@numDislikes").text
+							rating     = ytAPI.xpath("//gd:rating/@average").text
+							length     = ytAPI.xpath("//yt:duration/@seconds").text
+
+							views      = views.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+							likes      = likes.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+							dislikes   = dislikes.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+
+							length = length_in_minutes(length.to_i)
+
+							m.reply "YouTube 5| \"%s\" 5| %s 5| %s views 5| %s/5 (%s|%s)" % [name, length, views, rating[0..2], likes, dislikes]
+						rescue
+							page = @agent.get(link)
+							title = page.title.gsub(/\s+/, ' ').strip
+
+							uri = URI.parse(page.uri.to_s)
+							m.reply "Title 3| %s 3| %s" % [title[0..140], uri.host]
+						end
+
 					else # Generic Title
 						page = @agent.get(link)
 
@@ -213,10 +268,11 @@ class Uri
 					end
 
 				# File
-				else
-					return unless ignore_nick(m.user.nick).nil? and disable_passive_files(m.channel.name).nil?
+				elsif response.code != "400"
+					return unless ignore_nick(m.user.nick).nil? 
+					return unless disable_passive_files(m.channel.name).nil?
 
-					fileSize = page.header['content-length'].to_i
+					fileSize = response['content-length'].to_i
 
 					case fileSize
 						when 0..1024 then size = (fileSize.round(1)).to_s + " B"
@@ -227,13 +283,11 @@ class Uri
 
 					filename = ''
 
-					if page.header['content-disposition']
-						filename = page.header['content-disposition'].gsub("inline;", "").gsub("filename=", "").gsub(/\s+/, ' ') + " "
+					if response['content-disposition']
+						filename = response['content-disposition'].gsub("inline;", "").gsub("filename=", "").gsub(/\s+/, ' ') + " "
 					end
 
-					type = page.header['content-type']
-
-					uri = URI.parse(page.uri.to_s)
+					type = response['content-type']
 
 					m.reply "File 3| %s%s %s 3| %s" % [filename, type, size, uri.host]
 				end
