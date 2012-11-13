@@ -75,8 +75,6 @@ class Uri
 
 			uri = URI.parse(link)
 
-			Channel("#porygon").send "#{m.channel.to_s} #{m.user.nick} | #{link}"
-
 			begin
 
 				if(@agent.nil?)
