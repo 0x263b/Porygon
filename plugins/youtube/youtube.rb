@@ -53,7 +53,7 @@ class Youtube
 		
 			m.reply search(1)
 		rescue
-			m.reply "YouTube 4| Error: Could not find video"
+			m.reply "YouTube 5| Error: Could not find video"
 		end
 	end
 end
