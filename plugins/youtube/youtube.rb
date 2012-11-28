@@ -12,9 +12,9 @@ class Youtube
 		if seconds > 3599
 			length = [seconds/3600, seconds/60 % 60, seconds % 60].map{|t| t.to_s.rjust(2,'0')}.join(':')
 		elsif seconds > 59
-			length = [seconds/60 % 60, seconds % 60].join('m')+"s"
+			length = [seconds/60 % 60, seconds % 60].map{|t| t.to_s.rjust(2,'0')}.join(':')
 		else
-			length = "#{seconds}s"
+			length = "00:#{seconds.to_s.rjust(2,'0')}"
 		end
 	end
 
