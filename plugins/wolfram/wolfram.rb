@@ -19,6 +19,8 @@ class Wolfram
 			input  = ""
 			output = ""
 
+			more  = @bitly.shorten("http://www.wolframalpha.com/input/?i=#{CGI.escape(query)}")
+
 			if success == "true"
 				input  = @url.xpath("//pod[@position='100']//plaintext[1]").text.gsub(/\s+/, ' ')
 				output = @url.xpath("//pod[@position='200']/subpod[1]/plaintext[1]").text.gsub(/\s+/, ' ')
@@ -33,8 +35,6 @@ class Wolfram
 				else
 					reply = input + " => " + output
 				end
-
-				more  = @bitly.shorten("http://www.wolframalpha.com/input/?i=#{CGI.escape(query)}")
 
 			else
 				reply = "Fucked if I know"
