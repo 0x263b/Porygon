@@ -48,7 +48,7 @@ class Youtube
 
 				length = length_in_minutes(length.to_i)
 
-				"YouTube 5| \"%s\" 5| %s 5| %s views 5| %s/5 (%s|%s) 5| http://youtu.be/%s 5| More results: %s" % [name, length, views, rating[0..2], likes, dislikes, id, @page_url.shorten]
+				"YouTube 5| %s 5| %s 5| %s views 5| %s/5 (%s|%s) 5| http://youtu.be/%s 5| More results: %s" % [name, length, views, rating[0..2], likes, dislikes, id, @page_url.shorten]
 			end
 		
 			m.reply search(1)
