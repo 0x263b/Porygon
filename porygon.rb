@@ -144,7 +144,6 @@ require_relative './plugins/internal/userset.rb'  # UserSet
 
 # Advacned plugins
 require_relative './plugins/8ball/8ball.rb'                       # Eightball
-require_relative './plugins/bing.rb'                              # Bing
 require_relative './plugins/google/google.rb'                     # Google
 require_relative './plugins/lastfm/lastfm.rb'                     # Lastfm
 require_relative './plugins/google/gcalc.rb'                      # GCalc

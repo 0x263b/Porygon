@@ -10,7 +10,6 @@ class Basic
 			Channel(this.channel).join
 			sleep 1
 		end
-		Channel("#qb").join
 	end
 
 	# Rename when nick becomes available
