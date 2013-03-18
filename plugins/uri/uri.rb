@@ -70,8 +70,9 @@ class Uri
 		digits.nil? ? 0 : digits.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
 	end
 
-	# Only react in a channel
-	listen_to :channel
+
+
+	listen_to :channel # Only react in a channel
 	def listen(m)
 		return unless ignore_nick(m.user.nick).nil? and disable_passive(m.channel.name).nil?
 
@@ -101,202 +102,225 @@ class Uri
 					uri = URI.parse(final_uri.to_s)
 				end
 
-				begin
-					http = Net::HTTP.new(uri.host, uri.port)
-
-					if link.start_with?("https")
-						http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-						http.use_ssl = true						
-					end
-
-					http.open_timeout = 6 # in seconds
-					http.read_timeout = 6 # in seconds
-
-					request = Net::HTTP::Head.new(uri.request_uri)
-					request.initialize_http_header({"User-Agent" => "Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20100101 Firefox/14.0.1"})
-
-					response = http.request(request)
-				rescue
-					page = @agent.get link
-				end
-
-				# Title
-				if response["content-type"].to_s.include? "text/html" and response.code != "400"
-
-					case uri.host
-
-					when "boards.4chan.org"
-
-						doc = @agent.get(link)
-						bang = URI::split(link)
-
-						if bang[5].include? "/res/"
-
-							if bang[8] != nil
-								postnumber = bang[8].gsub('p', '')
-							else
-								postnumber = bang[5].gsub(/\/(.*)\/res\//, '')
-							end
-
-							subject   = doc.search("//div[@id='pi#{postnumber}']//span[@class='subject']").text
-							poster    = doc.search("//div[@id='pi#{postnumber}']//span[@class='name']").text
-							capcode   = doc.search("//div[@id='pi#{postnumber}']//strong[contains(@class,'capcode')]").text
-							flag      = doc.search("//div[@id='pi#{postnumber}']//img[@class='countryFlag']/@title").text
-							trip      = doc.search("//div[@id='pi#{postnumber}']//span[@class='postertrip']").text
-							reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub("</span>", "").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
-							reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
-							image     = doc.search("//span[@id='fT#{postnumber}']/a[1]/@href").text
-							date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']/@data-utc").text
-
-							date = Time.at(date.to_i)
-							date = minutes_in_words(date)
-
-							subject = subject+" " if subject != ""
-							reply = " 3| "+reply if reply != ""
-							reply = reply[0..160]+" ..." if reply.length > 160
-							image = " 3| File: https:"+image if image.length > 1
-							flag = flag+" " if flag.length > 1
-							capcode = " "+capcode if capcode.length > 1
-
-							m.reply "4chan 3| %s3%s%s%s %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
-
-						else # Board Index Title
-							page = @agent.get(link)
-
-							begin
-								title = page.title.gsub(/\s+/, ' ').strip
-							rescue
-								title = "text/html"
-							end
-
-							uri = URI.parse(page.uri.to_s)
-							m.reply "Title 3| %s 3| %s" % [title[0..140], uri.host]
-						end
-
-					when "twitter.com"
-
-						bang = link.split("/")
-						begin
-							if bang[5].include? "status"
-								twurl = Nokogiri::XML(open("http://api.twitter.com/1/statuses/show.xml?id=#{bang[6]}&include_entities=true", :read_timeout=>3).read)
-
-								tweettext   = twurl.xpath("//status/text").text.gsub(/\s+/, ' ')
-								posted      = twurl.xpath("//status/created_at").text
-								name        = twurl.xpath("//status/user/name").text
-								screenname  = twurl.xpath("//status/user/screen_name").text
-
-								urls        = twurl.xpath("//status/entities/urls/url")
-
-								urls.each do |rep|
-									shortened   = rep.xpath("url").text
-									expanded    = rep.xpath("expanded_url").text
-									tweettext   = tweettext.gsub(shortened, expanded)
-								end
-
-								time        = Time.parse(posted)
-								time        = minutes_in_words(time)
-
-								tweettext = CGI.unescape_html(tweettext)
-
-								m.reply "Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
-							elsif bang[4].include? "status"
-								twurl = Nokogiri::XML(open("http://api.twitter.com/1/statuses/show.xml?id=#{bang[5]}&include_entities=true", :read_timeout=>3).read)
-
-								tweettext   = twurl.xpath("//status/text").text.gsub(/\s+/, ' ')
-								posted      = twurl.xpath("//status/created_at").text
-								name        = twurl.xpath("//status/user/name").text
-								screenname  = twurl.xpath("//status/user/screen_name").text
-
-								urls        = twurl.xpath("//status/entities/urls/url")
-
-								urls.each do |rep|
-									shortened   = rep.xpath("url").text
-									expanded    = rep.xpath("expanded_url").text
-									tweettext   = tweettext.gsub(shortened, expanded)
-								end
-
-								time        = Time.parse(posted)
-								time        = minutes_in_words(time)
-
-								tweettext = CGI.unescape_html(tweettext)
-
-								m.reply "Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
-							else
-								m.reply "Title 3| Twitter 3| twitter.com"
-							end
-						rescue
-							m.reply "Title 3| Twitter 3| twitter.com"
-						end
-
-					when "www.youtube.com", "youtu.be"
-						
-						begin
-							regex    = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?(?:feature=player_detailpage)?(?:feature=player_embedded)?&?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
-							hashed   = JSON.parse(open("http://gdata.youtube.com/feeds/api/videos/#{link.match(regex)[1]}?v=2&alt=jsonc").read)
-
-							name     = hashed["data"]["title"]
-							views    = hashed["data"]["viewCount"]
-							likes    = hashed["data"]["likeCount"]
-							votes    = hashed["data"]["ratingCount"]
-							length   = hashed["data"]["duration"]
-
-							length   = length_in_minutes(length.to_i)
-							views    = add_commas(views.to_s) 
-
-							rating   = ((likes.to_i+0.0)/votes.to_i)*100
-
-							m.reply "YouTube 5| %s 5| %s 5| %s views 5| %s%" % [name[0..140], length, views, rating.round]
-						rescue
-							page = @agent.get(link)
-							title = page.title.gsub(/\s+/, ' ').strip
-
-							uri = URI.parse(page.uri.to_s)
-							m.reply "Title 3| %s 3| %s" % [title[0..140], uri.host]
-						end
-
-					else # Generic Title
-						page = @agent.get(link)
-
-						begin
-							title = page.title.gsub(/\s+/, ' ').strip
-						rescue
-							title = "text/html"
-						end
-
-						uri = URI.parse(page.uri.to_s)
-						m.reply "Title 3| %s 3| %s" % [title[0..140], uri.host]
-					end
-
-				# File
-				elsif response.code != "400"
-					return unless ignore_nick(m.user.nick).nil? 
-					return unless disable_passive_files(m.channel.name).nil?
-
-					fileSize = response['content-length'].to_i
-
-					case fileSize
-						when 0..1024 then size = (fileSize.round(1)).to_s + " B"
-						when 1025..1048576 then size = ((fileSize/1024.0).round(1)).to_s + " KB"
-						when 1048577..1073741824 then size = ((fileSize/1024.0/1024.0).round(1)).to_s + " MB"
-						else size = ((fileSize/1024.0/1024.0/1024.0).round(1)).to_s + " GB"
-					end
-
-					filename = ''
-
-					if response['content-disposition']
-						filename = response['content-disposition'].gsub("inline;", "").gsub("filename=", "").gsub(/\s+/, ' ') + " "
-					end
-
-					type = response['content-type']
-
-					m.reply "File 3| %s%s %s 3| %s" % [filename, type, size, uri.host]
-				end
+				m.reply get_info(m, link)
 
 			rescue Mechanize::ResponseCodeError => ex
-				m.reply "Title 3| #{ex.response_code} Error" 
+				m.reply "Title 3| #{ex.response_code} Error 3| #{uri.host}" 
 			rescue
 				nil
 			end
 		end
 	end
+
+	def get_info(m, link)
+		begin
+			uri = URI.parse(link)
+			http = Net::HTTP.new(uri.host, uri.port)
+
+			if link.start_with?("https")
+				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+				http.use_ssl = true						
+			end
+
+			http.open_timeout = 6 # in seconds
+			http.read_timeout = 6 # in seconds
+
+			request = Net::HTTP::Head.new(uri.request_uri)
+			request.initialize_http_header({"User-Agent" => "Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20100101 Firefox/14.0.1"})
+
+			get_response(m, http.request(request), link, uri)
+		rescue
+			nil
+		end
+	end
+
+	def get_response(m, response, link, uri)
+		if response["location"]
+			get_info(m, response["location"])
+		else
+			print_info(m, response, link, uri)
+		end
+	end
+
+	def print_info(m ,response, link, uri)
+
+		# Title
+		if response["content-type"].to_s.include? "text/html" and response.code != "400"
+
+			case uri.host
+
+			when "boards.4chan.org"
+				link_4chan(m, link, uri)
+
+			when "twitter.com"
+				link_twitter(m, link, uri)
+
+			when "www.youtube.com", "youtu.be"
+				link_youtube(m, link, uri)	
+
+			else # Generic Title
+				link_generic(m, link)
+
+			end
+
+		# File
+		elsif response.code != "400"
+			return unless disable_passive_files(m.channel.name).nil?
+
+			fileSize = response['content-length'].to_i
+
+			case fileSize
+				when 0..1024 then size = (fileSize.round(1)).to_s + " B"
+				when 1025..1048576 then size = ((fileSize/1024.0).round(1)).to_s + " KB"
+				when 1048577..1073741824 then size = ((fileSize/1024.0/1024.0).round(1)).to_s + " MB"
+				else size = ((fileSize/1024.0/1024.0/1024.0).round(1)).to_s + " GB"
+			end
+
+			filename = ''
+
+			if response['content-disposition']
+				filename = response['content-disposition'].gsub("inline;", "").gsub("filename=", "").gsub(/\s+/, ' ') + " "
+			end
+
+			type = response['content-type']
+
+			"File 3| %s%s %s 3| %s" % [filename, type, size, uri.host]
+		end
+
+	end
+
+
+	def link_4chan(m, link, uri)
+
+		doc = @agent.get(link)
+		bang = URI::split(link)
+
+		if bang[5].include? "/res/"
+
+			if bang[8] != nil
+				postnumber = bang[8].gsub('p', '')
+			else
+				postnumber = bang[5].gsub(/\/(.*)\/res\//, '')
+			end
+
+			subject   = doc.search("//div[@id='pi#{postnumber}']//span[@class='subject']").text
+			poster    = doc.search("//div[@id='pi#{postnumber}']//span[@class='name']").text
+			capcode   = doc.search("//div[@id='pi#{postnumber}']//strong[contains(@class,'capcode')]").text
+			flag      = doc.search("//div[@id='pi#{postnumber}']//img[@class='countryFlag']/@title").text
+			trip      = doc.search("//div[@id='pi#{postnumber}']//span[@class='postertrip']").text
+			reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub("</span>", "").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
+			reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
+			image     = doc.search("//span[@id='fT#{postnumber}']/a[1]/@href").text
+			date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']/@data-utc").text
+
+			date = Time.at(date.to_i)
+			date = minutes_in_words(date)
+
+			subject = subject+" " if subject != ""
+			reply = " 3| "+reply if reply != ""
+			reply = reply[0..160]+" ..." if reply.length > 160
+			image = " 3| File: https:"+image if image.length > 1
+			flag = flag+" " if flag.length > 1
+			capcode = " "+capcode if capcode.length > 1
+
+			"4chan 3| %s3%s%s%s %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
+
+		else # Board Index Title
+			link_generic(m, link)
+		end
+	end
+
+
+
+	def link_twitter(m, link, uri)
+		bang = link.split("/")
+		begin
+			if bang[5].include? "status"
+				twurl = Nokogiri::XML(open("http://api.twitter.com/1/statuses/show.xml?id=#{bang[6]}&include_entities=true", :read_timeout=>3).read)
+
+				tweettext   = twurl.xpath("//status/text").text.gsub(/\s+/, ' ')
+				posted      = twurl.xpath("//status/created_at").text
+				name        = twurl.xpath("//status/user/name").text
+				screenname  = twurl.xpath("//status/user/screen_name").text
+
+				urls        = twurl.xpath("//status/entities/urls/url")
+
+				urls.each do |rep|
+					shortened   = rep.xpath("url").text
+					expanded    = rep.xpath("expanded_url").text
+					tweettext   = tweettext.gsub(shortened, expanded)
+				end
+
+				time        = Time.parse(posted)
+				time        = minutes_in_words(time)
+
+				tweettext = CGI.unescape_html(tweettext)
+
+				"Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
+			elsif bang[4].include? "status"
+				twurl = Nokogiri::XML(open("http://api.twitter.com/1/statuses/show.xml?id=#{bang[5]}&include_entities=true", :read_timeout=>3).read)
+
+				tweettext   = twurl.xpath("//status/text").text.gsub(/\s+/, ' ')
+				posted      = twurl.xpath("//status/created_at").text
+				name        = twurl.xpath("//status/user/name").text
+				screenname  = twurl.xpath("//status/user/screen_name").text
+
+				urls        = twurl.xpath("//status/entities/urls/url")
+
+				urls.each do |rep|
+					shortened   = rep.xpath("url").text
+					expanded    = rep.xpath("expanded_url").text
+					tweettext   = tweettext.gsub(shortened, expanded)
+				end
+
+				time        = Time.parse(posted)
+				time        = minutes_in_words(time)
+
+				tweettext = CGI.unescape_html(tweettext)
+
+				"Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
+			else
+				"Title 3| Twitter 3| twitter.com"
+			end
+		rescue
+			"Title 3| Twitter 3| twitter.com"
+		end
+	end
+
+
+
+	def link_youtube(m, link, uri)
+		begin
+			regex    = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?(?:feature=player_detailpage)?(?:feature=player_embedded)?&?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
+			hashed   = JSON.parse(open("http://gdata.youtube.com/feeds/api/videos/#{link.match(regex)[1]}?v=2&alt=jsonc").read)
+
+			name     = hashed["data"]["title"]
+			views    = hashed["data"]["viewCount"]
+			likes    = hashed["data"]["likeCount"]
+			votes    = hashed["data"]["ratingCount"]
+			length   = hashed["data"]["duration"]
+
+			length   = length_in_minutes(length.to_i)
+			views    = add_commas(views.to_s) 
+
+			rating   = ((likes.to_i+0.0)/votes.to_i)*100
+
+			"YouTube 5| %s 5| %s 5| %s views 5| %s%" % [name[0..140], length, views, rating.round]
+		rescue
+			link_generic(m, link)
+		end
+	end
+
+
+
+	def link_generic(m, link)
+		puts "generic link"
+		page = @agent.get(link)
+		title = page.title.gsub(/\s+/, ' ').strip
+
+		uri = URI.parse(page.uri.to_s)
+		"Title 3| %s 3| %s" % [title[0..140], uri.host]
+	end
+
+#Class dismissed
 end
