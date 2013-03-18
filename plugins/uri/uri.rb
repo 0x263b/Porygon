@@ -66,6 +66,10 @@ class Uri
 		end
 	end
 
+	def add_commas(digits)
+		digits.nil? ? 0 : digits.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+	end
+
 	# Only react in a channel
 	listen_to :channel
 	def listen(m)
@@ -225,25 +229,23 @@ class Uri
 						end
 
 					when "www.youtube.com", "youtu.be"
-						regex = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
-
+						
 						begin
-							ytAPI = Nokogiri::XML(open("http://gdata.youtube.com/feeds/api/videos/#{link.match(regex)[1]}?v=2").read)
+							regex    = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?(?:feature=player_detailpage)?(?:feature=player_embedded)?&?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
+							hashed   = JSON.parse(open("http://gdata.youtube.com/feeds/api/videos/#{link.match(regex)[1]}?v=2&alt=jsonc").read)
 
-							name       = ytAPI.xpath("//media:title").text
-							views      = ytAPI.xpath("//yt:statistics/@viewCount").text
-							likes      = ytAPI.xpath("//yt:rating/@numLikes").text
-							dislikes   = ytAPI.xpath("//yt:rating/@numDislikes").text
-							rating     = ytAPI.xpath("//gd:rating/@average").text
-							length     = ytAPI.xpath("//yt:duration/@seconds").text
+							name     = hashed["data"]["title"]
+							views    = hashed["data"]["viewCount"]
+							likes    = hashed["data"]["likeCount"]
+							votes    = hashed["data"]["ratingCount"]
+							length   = hashed["data"]["duration"]
 
-							views      = views.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
-							likes      = likes.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
-							dislikes   = dislikes.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+							length   = length_in_minutes(length.to_i)
+							views    = add_commas(views.to_s) 
 
-							length = length_in_minutes(length.to_i)
+							rating   = ((likes.to_i+0.0)/votes.to_i)*100
 
-							m.reply "YouTube 5| \"%s\" 5| %s 5| %s views 5| %s/5 (%s|%s)" % [name, length, views, rating[0..2], likes, dislikes]
+							m.reply "YouTube 5| %s 5| %s 5| %s views 5| %s%" % [name[0..140], length, views, rating.round]
 						rescue
 							page = @agent.get(link)
 							title = page.title.gsub(/\s+/, ' ').strip
