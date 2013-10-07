@@ -55,7 +55,7 @@ class BotCoins
 		theft = exponential
 
 		if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
-			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] < -100
+			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 0
 				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
 				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += theft
 
