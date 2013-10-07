@@ -1,0 +1,237 @@
+# Porygon
+---
+### Functions
+* [Google](#google)
+* [Google Calculator](#calc)
+* [WolframAlpha](#wa)
+* [Youtube](#yt)
+* [Lastfm](#lastfm)
+* [Weather](#we)
+* [Translate](#tr)
+* [Twitter](#tw)
+* [Urban Dictionary](#ur)
+* [Random](#rand)
+* [8ball](#8ball)
+* [Horoscope](#horoscope)
+* [Botcoins](#botcoins)
+* [URL Parser](#uri)
+
+***
+
+### <a id="google"></a>Google
+Gets the first result from Google for *search query*
+
+Usage: **-g/-google** *search query*
+
+	-google Richard Stallman
+	Google | Richard Stallman's Personal Page | http://stallman.org/
+	Google | Richard Stallman - Wikipedia, the free encyclopedia | http://en.wikipedia.org/wiki/Richard_Stallman
+	Google | More results http://mcro.us/ukioc | Images: http://mcro.us/u7w1r
+
+
+### <a id="calc"></a>Google Calculator
+Calculates *equation* in Google Calculator
+ 	
+Usage: **-calc** *equation*
+
+	-calc 50 kg in lbs
+	Calc | 50 kilograms => 110.231131 pounds
+	
+
+### <a id="wa"></a>WolframAlpha
+Finds the answer of *question* using WolfarmAlpha
+
+Usage: **-wa** *question*
+
+	-wa time in Bosnia
+	Wolfram | current time in Bosnia and Herzegovina => 8:41:47 pm CEST | Monday, October 7, 2013 | More info: http://mcro.us/ui6e7
+	
+### <a id="yt"></a>Youtube
+ Gets the first result from Youtube for *search query* 
+ 
+ Usage: **-yt/-youtube** *search query*
+ 
+ 	-yt Richard Stallman interject
+ 	YouTube | I'd just like to interject... | 03:00 | 37,079 views | 269/5 | http://youtu.be/QlD9UBTcSW4 | More results: http://mcro.us/ubrov
+
+
+### <a id="lastfm"></a>Last.fm
+Associates your current irc nick with user.
+Other lastfm functions will default to this nick if no user is provided.
+
+**-set lastfm** *user*
+	
+	<jewface> -set lastfm jewy
+	<Porygon> jewface: last.fm user updated to: jewy
+ 
+
+User info and overall charts for *user*
+
+**-lastfm** *user*
+
+	-lastfm Cbbleh
+	Last.fm | Cbbleh (23/m/) | 23,758 Scrobbles | Overall Top Artists: Coroner (838), Destruction (776), Queen (681), Robert de Visée (664), Johann Sebastian Bach (573)
+	
+
+Artist info (top tracks, tags, etc.) for *artist*
+
+**-artist** *artist*
+
+	-artist 4minute
+	Last.fm 4minute (4,120,188 plays; 49,295 listeners). Top tracks: Huh, I My Me Mine, Hot Issue. Tagged as: k-pop, korean, female vocalists. URL: http://www.last.fm/music/4minute
+
+Upcoming events for *artist*
+
+**-events** *artist*
+
+	-events The Field
+	Upcoming events for The Field | Bristol: 12 Oct 13, Lisboa: 19 Oct 13, Paris: 01 Nov 13
+
+
+Weekly stats for *user*
+
+**-charts** *user*
+
+	-charts Cbbleh
+	Last.fm | Top 5 Weekly artists for Cbbleh | Slayer (26), Iced Earth (25), Jean-Féry Rebel (23), Morbid Saint (15), Judas Priest (14)
+	
+Compares two users the returns the tasteometer rating and common artists
+
+**-compare** *user user*
+
+	-compare Cbbleh cocaine
+	Last.fm | cbbleh vs xzwqt | 43.8% | Common artists include: Johann Sebastian Bach, Franz Joseph Haydn, Wolfgang Amadeus Mozart, Domenico Scarlatti, Franz Schubert
+	
+Returns the currently playing/last scrobbled track for *user* and top artist tags
+
+**-np** *user*
+	
+	-np Cbbleh
+	Last.fm | cbbleh is playing: "Super X-9" by Daikaiju from Daikaiju | Surf, surf rock, instrumental, instrumental surf rock
+	
+
+### <a id="we"></a>Weather
+Google Weather for *location*
+ 	
+Usage: **-w/-we/-weather** *location*
+
+	-weather Washington, DC
+	Weather | Washington, DC | Mostly Cloudy 44°F. Humidity: 49%. Wind: 12 km/h | Mon: Partly Cloudy 49°F/33°F | Tue: Partly Cloudy 49°F/40°F
+	
+Associates your current irc nick with *location*.
+Other weather functions will default to this location if none is provided.
+ 
+Usage: **-set location** *location* 
+
+	<jewface> -set location Washington, DC
+	<Porygon> jewface: location updated to: Washington, DC
+	
+
+### <a id="tr"></a>Translate
+Translates text using bing translate
+
+Usage: **-tr/-translate** *from to text*
+
+	>-translate en fr pig disgusting
+	Translate | en=>fr | "porc écoeurant"
+
+| code | Language           | code | Language           | code | Language |
+| ---: | :------------------- | ---: | :------------------- | ---:| :--------- |
+| ar  | Arabic 			| ht  | Haitian			| ro  | Romanian | 
+| cs  | Czech 			| hu  | Hungarian			| es  | Spanish| 
+| da  | Danish 			| id  | Indonesian			| ru  | Russian| 
+| de  | German 			| it  | Italian 			| sk  | Slovak | 
+| en  | English			| ja  | Japanese 			| sl  | Slovene| 
+| et  | Estonian 			| ko  | Korean			| sv  | Swedish| 
+| fi  | Finnish			| lt  | Lithuanian			| th  | Thai| 
+| fr  | French			| lv  | Latvian 			| tr  | Turkish| 
+| nl  | Dutch				| no  | Norwegian 			| uk  | Ukrainian| 
+| el  | Greek 			| pl  | Polish			| vi  | Vietnamese | 
+| he  | Hebrew 			| pt  | Portuguese
+| zh-CHS | Chinese Simplified	| zh-CHT  | Chinese Traditional |  | | 
+
+
+### <a id="tw"></a>Twitter
+Gets the latest tweet for *username*
+ 
+Usage: **-tw/-twitter** *username*
+ 
+	-tw TheOnion
+	Twitter | The Onion (@TheOnion) | "Look at them—huffing and puffing around the Capitol building. You can’t be angry when your heart’s melting." http://onion.com/19uWTqJ | Posted 9 minutes ago
+ 	
+
+### <a id="ur"></a>Urban Dictionary
+Gets the first definition of *query* at UrbanDictionary.com
+
+Usage: **-u/-ur/-urban** *query*
+
+	-urban 4chan
+	UrbanDictionary 4chan: you have just entered the very heart, soul, and life force of the internet. this is a place beyond sanity, wild and untamed. there is nothing new here. "new" content on 4chan is not found; it is created from old material. every interesting, offensive, shoc…
+	
+Gets the *n*th definition for *query* (only works for definitions 1-7)
+
+Usage: **-u/-ur/-urban** *n* *query*
+
+	-urban 3 4chan
+	UrbanDictionary | 4chan | 4chan.org is the absolute hell hole of the internet, but still amusing. Entering this website requires you leave your humanity behind before entering. WARNING: You will see things on /b/ that you wish you had never seen in your life.
+	
+
+### <a id="rand"></a>Random
+Randomly picks an option from an array separated by |
+
+Usage: **-r/-rand** *one | two | three*
+
+	-r do work | don't do work
+	don't do work
+	
+
+### <a id="8ball"></a>8Ball
+Gives and 8ball style answer to a *question*
+
+Usage: **-8ball** *question*
+
+	-8ball Am I going to score with this one girl I just finished talking to?
+	My sources say no
+	
+
+### <a id="horoscope"></a>Horoscope
+Checks the horoscope for *user*. Checks your horoscope if no *user* provided.
+
+Usage: **-horoscope** *user*
+
+	<jewface> -horoscope
+	<Porygon> jewface: Remember: Nobody is perfect. Whatever you lack in talent and ability, you more than make up for in well-timed excuses.
+	
+
+### <a id="botcoins"></a>Botcoins
+Mines cyberspace for virtual currency
+
+Usage: **-mine**
+
+	-mine
+	You have mined 3 botcoin(s), giving you a total of 14
+	
+Loots *user*'s virtual bank account
+
+Usage: **-loot** *user*
+
+	-loot jewface
+	You stole 4 botcoins from jewface!
+	
+Checks the account balance for *user*. Checks your balance if no *user* provided.
+
+Usage: **-balance** *user*
+
+	<jewface> -balance
+	<Porygon> jewface has mined 14 botcoins 
+	
+
+### <a id="uri"></a>URL Parser
+Returns the title of a page and the host for html URLs.
+Returns the type, size, and (sometimes) filename of a file URL.
+
+	https://news.ycombinator.com/
+	Title | Hacker News | news.ycombinator.com
+
+	http://ompldr.org/vNmhrdA
+	File "omg.png" image/png; charset=binary 126.9 KB (ompldr.org)
