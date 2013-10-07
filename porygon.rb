@@ -24,7 +24,7 @@ require 'cgi'
 $BOTNICK       = ""
 $BOTPASSWORD   = ""
 $BOTOWNER      = "" # Make sure this is lowercase
-$BOTURL        = "http://developers.im/help"
+$BOTURL        = "http://waa.ai/porygon"
 $BOTGIT        = "https://github.com/killwhitey/Porygon"
 
 # API Keys
