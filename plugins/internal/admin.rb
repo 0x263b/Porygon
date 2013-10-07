@@ -100,7 +100,7 @@ class Admin
 		return unless check_admin(m.user)
 		begin
 
-			rows = $DataBase['users'].find{ |h| h['ignored'] == true }
+			rows = $DataBase['users'].find_all{ |h| h['ignored'] == true }
 			rows = JSON.pretty_generate rows
 
 			url = URI.parse('http://mcro.us/c')
@@ -162,7 +162,7 @@ class Admin
 	def list_admins(m)
 		return unless check_admin(m.user)
 		begin
-			rows = $DataBase['users'].find{ |h| h['admin'] == true }
+			rows = $DataBase['users'].find_all{ |h| h['admin'] == true }
 			rows = JSON.pretty_generate rows
 
 			url = URI.parse('http://mcro.us/c')
