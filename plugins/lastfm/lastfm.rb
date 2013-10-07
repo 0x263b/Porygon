@@ -38,8 +38,7 @@ class Lastfm
 
 	# Last.fm user info
 
-	match /lastfm(?: (.+))?/i, method: :user_info
-
+	match /lastfm(?: (\S+))?/i, method: :user_info
 	def user_info(m, query = nil)
 		return if ignore_nick(m.user.nick)
 
@@ -95,8 +94,7 @@ class Lastfm
 
 	# Last.fm 7 day charts
 
-	match /charts(?: (.+))?/i, method: :charts
-
+	match /charts(?: (\S+))?/i, method: :charts
 	def charts(m, query = nil)
 		return if ignore_nick(m.user.nick)
 
@@ -134,7 +132,6 @@ class Lastfm
 
 	match /compare (\S+)$/i, method: :compare
 	match /compare (\S+) (\S+)/i, method: :compare
-
 	def compare(m, one, two = nil)
 		return if ignore_nick(m.user.nick)
 
@@ -180,8 +177,7 @@ class Lastfm
 
 	# Last played/Currently playing Track
 
-	match /np(?: (.+))?/i, method: :now_playing
-
+	match /np(?: (\S+))?/i, method: :now_playing
 	def now_playing(m, query = nil)
 		return if ignore_nick(m.user.nick)
 
@@ -233,7 +229,6 @@ class Lastfm
 	# Artist Info
 
 	match /artist (.+)/i, method: :artist_info
-
 	def artist_info(m, query)
 		return if ignore_nick(m.user.nick)
 
@@ -274,27 +269,27 @@ class Lastfm
 		m.reply "Last.fm 4| #{reply}"
 	end
 
- 	match /events (.+)/i, method: :artist_events
- 
- 	def artist_events(m, query, n=3)
- 		return if ignore_nick(m.user.nick)
- 
- 		begin
- 			artistevents = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=#{URI.escape(query)}&api_key="+$LASTFMAPI))
- 
- 			events        = artistevents.xpath("//event")[0..n]
- 			locationlist = ""
- 			events.each do |getinfo|
- 				city = getinfo.xpath("venue/location/city").text
- 				date = getinfo.xpath("startDate").text
- 				date = DateTime.parse(date).strftime("%d %b %y")
- 				locationlist = locationlist + "#{city}: #{date}, "
- 			end
- 			locationlist = locationlist[0..locationlist.length-3]
- 
- 			reply = "%s" % [locationlist]
- 		end
- 		m.reply "Upcoming events for #{query} 4| #{reply}"
- 	end
+
+	match /events (.+)/i, method: :artist_events
+	def artist_events(m, query, n=3)
+		return if ignore_nick(m.user.nick)
+
+		begin
+			artistevents = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=#{URI.escape(query)}&api_key="+$LASTFMAPI))
+
+			events        = artistevents.xpath("//event")[0..n]
+			locationlist = ""
+			events.each do |getinfo|
+				city = getinfo.xpath("venue/location/city").text
+				date = getinfo.xpath("startDate").text
+				date = DateTime.parse(date).strftime("%d %b %y")
+				locationlist = locationlist + "#{city}: #{date}, "
+			end
+			locationlist = locationlist[0..locationlist.length-3]
+
+			reply = "%s" % [locationlist]
+		end
+		m.reply "Upcoming events for #{query} 4| #{reply}"
+	end
 
 end

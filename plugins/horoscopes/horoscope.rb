@@ -3,7 +3,7 @@
 class Horoscope
 	include Cinch::Plugin
 
-	match /horoscope(?: (.+))?/i
+	match /horoscope(?: (\S+))?/i
 
 	def execute(m, person)
 		return if ignore_nick(m.user.nick)

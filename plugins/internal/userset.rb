@@ -6,7 +6,7 @@ class UserSet
 
 	# Last.fm username
 
-	match /set lastfm (.+)/i, method: :set_lastfm
+	match /set lastfm (\S+)/i, method: :set_lastfm
 	def set_lastfm(m, username)
 		return if ignore_nick(m.user.nick)
 		begin

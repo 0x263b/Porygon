@@ -5,7 +5,7 @@ class Admin
 
 	set :prefix, lambda{ |m| /^#{m.bot.nick},?:?\s/i}
 
-	match /nick (.+)/i, method: :nick
+	match /nick (\S+)/i, method: :nick
 	def nick(m, name)
 		return unless check_admin(m.user)
 		@bot.nick = name
@@ -20,14 +20,14 @@ class Admin
 	end
 
 
-	match /msg (.+?) (.+)/i, method: :message
+	match /msg (\S+) (.+)/i, method: :message
 	def message(m, who, text)
 		return unless check_admin(m.user)
 		User(who).send text
 	end
 
 
-	match /say (.+?) (.+)/i, method: :message_channel
+	match /say (\S+) (.+)/i, method: :message_channel
 	def message_channel(m, chan, text)
 		return unless check_admin(m.user)
 		Channel(chan).send text
@@ -55,7 +55,7 @@ class Admin
 
   # Ignore users
 
-	match /ignore (.+)/i, method: :ignore
+	match /ignore (\S+)/i, method: :ignore
 	def ignore(m, username)
 		return unless check_admin(m.user)
 
@@ -75,7 +75,7 @@ class Admin
 		end
 	end
 
-	match /unignore (.+)/i, method: :unignore
+	match /unignore (\S+)/i, method: :unignore
 	def unignore(m, username)
 		return unless check_admin(m.user)
 
@@ -118,7 +118,7 @@ class Admin
 
   # Make/Remove admins
 
-	match /add admin (.+)/i, method: :add_admin
+	match /add admin (\S+)/i, method: :add_admin
 	def add_admin(m, username)
 		return unless m.user.nick.downcase == $BOTOWNER
 
@@ -138,7 +138,7 @@ class Admin
 		end
 	end
 
-	match /remove admin (.+)/i, method: :del_admin
+	match /remove admin (\S+)/i, method: :del_admin
 	def del_admin(m, username)
 		return unless m.user.nick.to_s.downcase == $BOTOWNER
 
@@ -322,7 +322,7 @@ class Admin
 
 	# Last.fm 
 
-	match /remove lastfm (.+)/i, method: :del_lastfm
+	match /remove lastfm (\S+)/i, method: :del_lastfm
 	def del_lastfm(m, nick)
 		return unless check_admin(m.user)
 		begin
@@ -343,8 +343,8 @@ class Admin
 
 	# Locations 
 
-	match /remove location (.+)/i, method: :del_location
-	def del_location(m, number)
+	match /remove location (\S+)/i, method: :del_location
+	def del_location(m, nick)
 		return unless check_admin(m.user)
 		begin
 			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }

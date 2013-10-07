@@ -30,7 +30,7 @@ class BotCoins
 		m.user.notice "You have mined #{mined} botcoin(s), giving you a total of #{balance}"
 	end
 
-	match /balance(?: (.+))?/i, method: :balance, :react_on => :channel
+	match /balance(?: (\S+))?/i, method: :balance, :react_on => :channel
 	def balance(m, nick)
 		return if ignore_nick(m.user.nick)
 
@@ -46,7 +46,7 @@ class BotCoins
 		end
 	end
 
-	match /loot (.+)/i, method: :loot, :react_on => :channel
+	match /loot (\S+)/i, method: :loot, :react_on => :channel
 	def loot(m, nick)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 

@@ -3,7 +3,7 @@
 class Twitter
 	include Cinch::Plugin
 
-	match /tw(?:itter)? (.+)/i
+	match /tw(?:itter)? (\S+)/i
 
 	def minutes_in_words(timestamp)
 		minutes = (((Time.now - timestamp).abs)/60).round
