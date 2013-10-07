@@ -5,11 +5,19 @@ class UrbanDictionary
 
 	match /u(?:r(?:ban)?)? (?:([1-7]{1}) )?(.+)/i, method: :urban
 
+	def shorten_url(long)
+		url = URI.parse('http://mcro.us/s')
+		http = Net::HTTP.new(url.host, url.port)
+		response, body = http.post(url.path, long)
+		return response['location']
+	end
+
 	def urban(m, number, word)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
+
+		Channel("#porygon").send "#{m.channel.to_s} #{m.user.nick} | UrbanDictionary => #{word}"
 
 		begin
-			@bitly = Bitly.new($BITLYUSER, $BITLYAPI)
 
 			number ||= 1
 
@@ -18,8 +26,8 @@ class UrbanDictionary
 			define = urban.search("//div[@class='definition']")[number.to_i-1].text.gsub(/\s+/, ' ')
 
 			if define.length > 255
-				more = @bitly.shorten("http://www.urbandictionary.com/define.php?term=#{CGI.escape(word)}")
-				define = "#{define[0..255]}... #{more.shorten}"
+				more = shorten_url("http://www.urbandictionary.com/define.php?term=#{CGI.escape(word)}")
+				define = "#{define[0..255]}... #{more}"
 			end
 
 			m.reply "UrbanDictionary 06| #{word} 06| #{define}"

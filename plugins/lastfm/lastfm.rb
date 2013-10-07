@@ -8,19 +8,28 @@ class Lastfm
 
 	def get_lastfm(m, param) 
 		if param == '' || param.nil?
-			username = LastfmDB.first(:nick => m.user.nick.downcase)
-			if username.nil?
-				m.reply "last.fm username not provided nor on file. Use :set lastfm username to save your nick."
-				return nil
+			if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+				username = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['lastfm']
+			
+				if username.nil?
+					m.reply "last.fm username not provided nor on file. Use -set lastfm username to save your nick."
+					return nil
+				else
+					return username
+				end
 			else
-				return username.username
+				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+				m.reply "last.fm username not provided nor on file. Use -set lastfm username to save your nick."
+				return nil
 			end
 		else
-			username = LastfmDB.first(:nick => param.downcase)
-			if username.nil?
-				return param.strip
-			else
-				return username.username
+			if $DataBase['users'].find{ |h| h['nick'] == param.downcase }
+				username = $DataBase['users'].find{ |h| h['nick'] == param.downcase }['lastfm']
+				if username.nil?
+					return param.strip
+				else
+					return username
+				end
 			end
 		end
 	end 
@@ -32,7 +41,7 @@ class Lastfm
 	match /lastfm(?: (.+))?/i, method: :user_info
 
 	def user_info(m, query = nil)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		username = get_lastfm(m, query)
 		return if username.nil?
@@ -89,7 +98,7 @@ class Lastfm
 	match /charts(?: (.+))?/i, method: :charts
 
 	def charts(m, query = nil)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		username = get_lastfm(m, query)
 		return if username.nil?
@@ -127,7 +136,7 @@ class Lastfm
 	match /compare (\S+) (\S+)/i, method: :compare
 
 	def compare(m, one, two = nil)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		userone = get_lastfm(m, one)
 		return if userone.nil?
@@ -174,7 +183,7 @@ class Lastfm
 	match /np(?: (.+))?/i, method: :now_playing
 
 	def now_playing(m, query = nil)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		username = get_lastfm(m, query)
 		return if username.nil?
@@ -191,7 +200,7 @@ class Lastfm
 
 			album   = " from #{album}" if album != ""
 
-			tagurl = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=#{URI.escape(artist)}&api_key="+$LASTFMAPI, :read_timeout=>3).read)
+			tagurl = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=#{CGI.escape(artist)}&api_key="+$LASTFMAPI, :read_timeout=>3).read)
 			tags = tagurl.xpath("//toptags/tag")[0..3]
 			taglist = ""
 			tags.each do |gettags|
@@ -226,11 +235,11 @@ class Lastfm
 	match /artist (.+)/i, method: :artist_info
 
 	def artist_info(m, query)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		begin
-			artistinfo = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=#{URI.escape(query)}&api_key="+$LASTFMAPI))
-			toptracks  = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=#{URI.escape(query)}&limit=3&autocorrect=1&api_key="+$LASTFMAPI))    
+			artistinfo = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=#{CGI.escape(query)}&api_key="+$LASTFMAPI))
+			toptracks  = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=#{CGI.escape(query)}&limit=3&autocorrect=1&api_key="+$LASTFMAPI))    
 
 			artist     = artistinfo.xpath("//lfm/artist/name").text
 			plays      = artistinfo.xpath("//lfm/artist/stats/playcount").text
@@ -264,5 +273,28 @@ class Lastfm
 		end
 		m.reply "Last.fm 4| #{reply}"
 	end
+
+ 	match /events (.+)/i, method: :artist_events
+ 
+ 	def artist_events(m, query, n=3)
+ 		return if ignore_nick(m.user.nick)
+ 
+ 		begin
+ 			artistevents = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=#{URI.escape(query)}&api_key="+$LASTFMAPI))
+ 
+ 			events        = artistevents.xpath("//event")[0..n]
+ 			locationlist = ""
+ 			events.each do |getinfo|
+ 				city = getinfo.xpath("venue/location/city").text
+ 				date = getinfo.xpath("startDate").text
+ 				date = DateTime.parse(date).strftime("%d %b %y")
+ 				locationlist = locationlist + "#{city}: #{date}, "
+ 			end
+ 			locationlist = locationlist[0..locationlist.length-3]
+ 
+ 			reply = "%s" % [locationlist]
+ 		end
+ 		m.reply "Upcoming events for #{query} 4| #{reply}"
+ 	end
 
 end

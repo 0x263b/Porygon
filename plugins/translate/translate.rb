@@ -6,7 +6,7 @@ class Translate
 	match /t(?:r(?:anslate)?)? ([a-zA-Z-]{2,6}) ([a-zA-Z-]{2,6}) (.*)/iu
 
 	def execute(m, from, to, message)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		begin
 			url = open("https://api.datamarket.azure.com/Data.ashx/Bing/MicrosoftTranslator/Translate?Text=%27#{URI.escape(message)}%27&To=%27#{to}%27&From=%27#{from}%27&$top=100&$format=Atom", :http_basic_authentication=>[$AZUREU, $AZUREP])

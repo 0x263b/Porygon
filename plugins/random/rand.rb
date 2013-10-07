@@ -5,7 +5,7 @@ class Pick
 
 	match /r(?:and)? (.+)/i
 	def execute(m, query)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		begin
 			options = query.split(/\|/)

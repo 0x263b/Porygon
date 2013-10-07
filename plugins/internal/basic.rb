@@ -5,10 +5,13 @@ class Basic
 	listen_to :connect, method: :identify
 	def identify(m)
 		User("nickserv").send("identify #{$BOTPASSWORD}")
-		sleep 1 # Wait for hostserv to kick in
-		JoinDB.all.each do |this|
-			Channel(this.channel).join
-			sleep 1
+		sleep 3 # Wait for nickserv to kick in
+		
+		$DataBase['channels'].each do |key| 
+			if key['auto_join'] == true
+				Channel(key['channel']).join
+				sleep 5
+			end
 		end
 	end
 
@@ -25,7 +28,7 @@ class Basic
 	listen_to :kick
 	def listen(m)
 		return unless m.params[1] == @bot.nick
-		sleep 2
+		sleep 3
 		Channel(m.channel.name).join(m.channel.key)
 	end
 

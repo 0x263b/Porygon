@@ -5,7 +5,6 @@ Encoding.default_internal = "UTF-8"
 
 class Uri 
 	include Cinch::Plugin
-	react_on :channel
 
 	# Human readable timestamp for Twitter URLs
 	def minutes_in_words(timestamp)
@@ -70,13 +69,19 @@ class Uri
 		digits.nil? ? 0 : digits.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
 	end
 
+	def prepare_access_token(oauth_token, oauth_token_secret)
+		consumer = OAuth::Consumer.new($TWITTER_CONSUMER_KEY, $TWITTER_CONSUMER_SECRET, {:site => "http://api.twitter.com", :scheme => :header })
+		token_hash = { :oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret }
+		access_token = OAuth::AccessToken.from_hash(consumer, token_hash )
+
+		return access_token
+	end
 
 
 	listen_to :channel # Only react in a channel
 	def listen(m)
-		return unless ignore_nick(m.user.nick).nil? and disable_passive(m.channel.name).nil?
-
 		URI.extract(m.message, ["http", "https"]).first(1).each do |link|
+			return if ignore_nick(m.user.nick) or uri_disabled(m.channel.name)
 
 			uri = URI.parse(link)
 
@@ -165,7 +170,7 @@ class Uri
 
 		# File
 		elsif response.code != "400"
-			return unless disable_passive_files(m.channel.name).nil?
+			return if file_info_disabled(m.channel.name)
 
 			fileSize = response['content-length'].to_i
 
@@ -206,9 +211,9 @@ class Uri
 			subject   = doc.search("//div[@id='pi#{postnumber}']//span[@class='subject']").text
 			poster    = doc.search("//div[@id='pi#{postnumber}']//span[@class='name']").text
 			capcode   = doc.search("//div[@id='pi#{postnumber}']//strong[contains(@class,'capcode')]").text
-			flag      = doc.search("//div[@id='pi#{postnumber}']//img[@class='countryFlag']/@title").text
+			flag      = doc.search("//div[@id='pi#{postnumber}']//span[contains(concat(' ',normalize-space(@class),' '),' flag ')]/@title").text # http://pivotallabs.com/xpath-css-class-matching/
 			trip      = doc.search("//div[@id='pi#{postnumber}']//span[@class='postertrip']").text
-			reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub("</span>", "").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
+			reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
 			reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
 			image     = doc.search("//span[@id='fT#{postnumber}']/a[1]/@href").text
 			date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']/@data-utc").text
@@ -235,42 +240,23 @@ class Uri
 	def link_twitter(m, link, uri)
 		bang = link.split("/")
 		begin
-			if bang[5].include? "status"
-				twurl = Nokogiri::XML(open("http://api.twitter.com/1/statuses/show.xml?id=#{bang[6]}&include_entities=true", :read_timeout=>3).read)
+			if bang[4].include? "status"
+				access_token = prepare_access_token($TWITTER_ACCESS_TOKEN, $TWITTER_ACCESS_TOKEN_SECRET)
 
-				tweettext   = twurl.xpath("//status/text").text.gsub(/\s+/, ' ')
-				posted      = twurl.xpath("//status/created_at").text
-				name        = twurl.xpath("//status/user/name").text
-				screenname  = twurl.xpath("//status/user/screen_name").text
+				response = access_token.request(:get, "https://api.twitter.com/1.1/statuses/show/#{bang[5]}.json")
+				parsed_response = JSON.parse(response.body)
 
-				urls        = twurl.xpath("//status/entities/urls/url")
+				tweettext   = parsed_response["text"].gsub(/\s+/, ' ')
+				posted      = parsed_response["created_at"]
+				name        = parsed_response["user"]["name"]
+				screenname  = parsed_response["user"]["screen_name"]
 
-				urls.each do |rep|
-					shortened   = rep.xpath("url").text
-					expanded    = rep.xpath("expanded_url").text
-					tweettext   = tweettext.gsub(shortened, expanded)
-				end
-
-				time        = Time.parse(posted)
-				time        = minutes_in_words(time)
-
-				tweettext = CGI.unescape_html(tweettext)
-
-				"Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
-			elsif bang[4].include? "status"
-				twurl = Nokogiri::XML(open("http://api.twitter.com/1/statuses/show.xml?id=#{bang[5]}&include_entities=true", :read_timeout=>3).read)
-
-				tweettext   = twurl.xpath("//status/text").text.gsub(/\s+/, ' ')
-				posted      = twurl.xpath("//status/created_at").text
-				name        = twurl.xpath("//status/user/name").text
-				screenname  = twurl.xpath("//status/user/screen_name").text
-
-				urls        = twurl.xpath("//status/entities/urls/url")
+				urls = parsed_response["entities"]["urls"]
 
 				urls.each do |rep|
-					shortened   = rep.xpath("url").text
-					expanded    = rep.xpath("expanded_url").text
-					tweettext   = tweettext.gsub(shortened, expanded)
+					short = rep["url"]
+					long  = rep["expanded_url"]
+					tweettext = tweettext.gsub(short, long)
 				end
 
 				time        = Time.parse(posted)

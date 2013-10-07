@@ -3,8 +3,7 @@
 class Admin
 	include Cinch::Plugin
 
-	prefix lambda{ |m| /^#{m.bot.nick},?:?\s/i }
-
+	set :prefix, lambda{ |m| /^#{m.bot.nick},?:?\s/i}
 
 	match /nick (.+)/i, method: :nick
 	def nick(m, name)
@@ -61,11 +60,13 @@ class Admin
 		return unless check_admin(m.user)
 
 		begin
-			old = IgnoreDB.first(:nick => username.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['users'].find{ |h| h['nick'] == username.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['ignored'] = true
+			else
+				$DataBase['users'] << {"nick"=> username.downcase, "admin"=> false, "ignored"=> true, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+			end
 
-			new = IgnoreDB.new(:nick => username.downcase)
-			new.save
+			save_DB
 
 			m.reply "I never liked him anyway"
 		rescue
@@ -79,8 +80,13 @@ class Admin
 		return unless check_admin(m.user)
 
 		begin
-			old = IgnoreDB.first(:nick => username.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['users'].find{ |h| h['nick'] == username.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['ignored'] = false
+			else
+				$DataBase['users'] << {"nick"=> username.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+			end
+
+			save_DB
 
 			m.reply "Sorry about that"
 		rescue
@@ -93,19 +99,15 @@ class Admin
 	def list_ignores(m)
 		return unless check_admin(m.user)
 		begin
-			agent = Mechanize.new
-			rows = ""
 
-			IgnoreDB.all.each do |item|
-				rows = rows + item.id.to_s + ". " + item.nick + "\n"
-			end
+			rows = $DataBase['users'].find{ |h| h['ignored'] == true }
+			rows = JSON.pretty_generate rows
 
-			page = agent.get "http://p.sjis.me/"
-			form = page.forms.first
-			form.content = rows
-			page = agent.submit form
+			url = URI.parse('http://mcro.us/c')
+			http = Net::HTTP.new(url.host, url.port)
+			response, body = http.post(url.path, rows)
 
-			m.reply page.search("//a[@name='plain']/@href").text, true
+			m.reply response['location'], true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
@@ -121,11 +123,13 @@ class Admin
 		return unless m.user.nick.downcase == $BOTOWNER
 
 		begin
-			old = AdminDB.first(:nick => username.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['users'].find{ |h| h['nick'] == username.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['admin'] = true
+			else
+				$DataBase['users'] << {"nick"=> username.downcase, "admin"=> true, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+			end
 
-			new = AdminDB.new(:nick => username.downcase)
-			new.save
+			save_DB
 
 			m.reply "A new master!"
 		rescue
@@ -139,8 +143,13 @@ class Admin
 		return unless m.user.nick.to_s.downcase == $BOTOWNER
 
 		begin
-			old = AdminDB.first(:nick => username.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['users'].find{ |h| h['nick'] == username.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['admin'] = false
+			else
+				$DataBase['users'] << {"nick"=> username.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+			end
+
+			save_DB
 
 			m.reply "I never liked him anyway"
 		rescue
@@ -153,19 +162,14 @@ class Admin
 	def list_admins(m)
 		return unless check_admin(m.user)
 		begin
-			agent = Mechanize.new
-			rows = ""
+			rows = $DataBase['users'].find{ |h| h['admin'] == true }
+			rows = JSON.pretty_generate rows
 
-			AdminDB.all.each do |item|
-				rows = rows + item.id.to_s + ". " + item.nick + "\n"
-			end
+			url = URI.parse('http://mcro.us/c')
+			http = Net::HTTP.new(url.host, url.port)
+			response, body = http.post(url.path, rows)
 
-			page = agent.get "http://p.sjis.me/"
-			form = page.forms.first
-			form.content = rows
-			page = agent.submit form
-
-			m.reply page.search("//a[@name='plain']/@href").text, true
+			m.reply response['location'], true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
@@ -182,8 +186,13 @@ class Admin
 		channel ||= m.channel.to_s
 
 		begin
-			old = PassiveDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['channels'].find{ |h| h['channel'] == channel.downcase }
+				$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }['passive'] = true
+			else
+				$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> false, "passive"=> true, "file_info"=> true}
+			end
+
+			save_DB
 
 			m.reply "Now reacting to URIs"
 		rescue
@@ -198,11 +207,13 @@ class Admin
 		channel ||= m.channel.to_s
 
 		begin
-			old = PassiveDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['channels'].find{ |h| h['channel'] == channel.downcase }
+				$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }['passive'] = false
+			else
+				$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> false, "passive"=> false, "file_info"=> false}
+			end
 
-			new = PassiveDB.new(:channel => channel.downcase)
-			new.save
+			save_DB
 
 			m.reply "No longer reacting to URIs"
 		rescue
@@ -217,8 +228,13 @@ class Admin
 		channel ||= m.channel.to_s
 
 		begin
-			old = PassiveFDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['channels'].find{ |h| h['channel'] == channel.downcase }
+				$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }['file_info'] = true
+			else
+				$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> false, "passive"=> true, "file_info"=> true}
+			end
+
+			save_DB
 
 			m.reply "Now reacting to file URIs"
 		rescue
@@ -233,49 +249,15 @@ class Admin
 		channel ||= m.channel.to_s
 
 		begin
-			old = PassiveFDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
+			if $DataBase['channels'].find{ |h| h['channel'] == channel.downcase }
+				$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }['file_info'] = false
+			else
+				$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> false, "passive"=> true, "file_info"=> false}
+			end
 
-			new = PassiveFDB.new(:channel => channel.downcase)
-			new.save
+			save_DB
 
 			m.reply "No longer reacting to file URIs"
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end
-
-
-
-  # Lue Search ON/OFF
-
-	match /search on(?: (.+))?/i, method: :search_on
-	def search_on(m, channel)
-		return unless check_admin(m.user)
-		channel ||= m.channel.to_s
-
-		begin
-			new = SearchDB.new(:channel => channel.downcase)
-			new.save
-
-			m.reply "Search now enabled"
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end
-
-	match /search off(?: (.+))?/i, method: :search_off
-	def search_off(m, channel)
-		return unless check_admin(m.user)
-		channel ||= m.channel.to_s
-
-		begin
-			old = SearchDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
-
-			m.reply "Search no longer enabled"
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
@@ -291,11 +273,9 @@ class Admin
 		return unless check_admin(m.user)
 
 		begin
-			old = JoinDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
+			$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> true, "passive"=> true, "file_info"=> true}
 
-			new = JoinDB.new(:channel => channel.downcase)
-			new.save
+			save_DB
 
 			Channel(channel).join
 		rescue
@@ -310,8 +290,9 @@ class Admin
 		channel ||= m.channel.to_s
 
 		begin
-			old = JoinDB.first(:channel => channel.downcase)
-			old.destroy! unless old.nil?
+			$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }["auto_join"] == false
+
+			save_DB
 
 			Channel(channel).part if channel
 		rescue
@@ -324,19 +305,13 @@ class Admin
 	def list_channels(m)
 		return unless check_admin(m.user)
 		begin
-			agent = Mechanize.new
-			rows = ""
+			rows = JSON.pretty_generate($DataBase['channels'])
 
-			JoinDB.all.each do |item|
-				rows = rows + item.id.to_s + ". " + item.channel + "\n"
-			end
+			url = URI.parse('http://mcro.us/c')
+			http = Net::HTTP.new(url.host, url.port)
+			response, body = http.post(url.path, rows)
 
-			page = agent.get "http://p.sjis.me/"
-			form = page.forms.first
-			form.content = rows
-			page = agent.submit form
-
-			m.reply page.search("//a[@name='plain']/@href").text, true
+			m.reply response['location'], true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
@@ -347,35 +322,15 @@ class Admin
 
 	# Last.fm 
 
-	match /list lastfm/i, method: :list_lastfm
-	def list_lastfm(m)
+	match /remove lastfm (.+)/i, method: :del_lastfm
+	def del_lastfm(m, nick)
 		return unless check_admin(m.user)
 		begin
-			agent = Mechanize.new
-			rows = ""
-
-			LastfmDB.all.each do |item|
-				rows = rows + item.id.to_s + ". " + item.nick + " = " + item.username + "\n"
+			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['lastfm'] = nil
 			end
 
-			page = agent.get "http://p.sjis.me/"
-			form = page.forms.first
-			form.content = rows
-			page = agent.submit form
-
-			m.reply page.search("//a[@name='plain']/@href").text, true
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end 
-
-	match /remove lastfm (\d+)/i, method: :del_lastfm
-	def del_lastfm(m, number)
-		return unless check_admin(m.user)
-		begin
-			old = LastfmDB.first(:id => number.to_i)
-			old.destroy! unless old.nil?
+			save_DB
 
 			m.reply "Done", true
 		rescue
@@ -388,100 +343,21 @@ class Admin
 
 	# Locations 
 
-	match /list locations/i, method: :list_locations
-	def list_locations(m)
-		return unless check_admin(m.user)
-		begin
-			agent = Mechanize.new
-			rows = ""
-
-			LocationDB.all.each do |item|
-				rows = rows + item.id.to_s + ". " + item.nick + " = " + item.location + "\n"
-			end
-
-			page = agent.get "http://p.sjis.me/"
-			form = page.forms.first
-			form.content = rows
-			page = agent.submit form
-
-			m.reply page.search("//a[@name='plain']/@href").text, true
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end 
-
-	match /remove location (\d+)/i, method: :del_location
+	match /remove location (.+)/i, method: :del_location
 	def del_location(m, number)
 		return unless check_admin(m.user)
 		begin
-			old = LocationDB.first(:id => number.to_i)
-			old.destroy! unless old.nil?
-
-			m.reply "Done", true
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end
-
-
-	#
-	#  This does nothing now
-	#
-
-	# Insults
-
-	match /add insult (.+)/i, method: :add_insult
-	def add_insult(m, text)
-		return unless check_admin(m.user)
-
-		begin
-			new = InsultDB.new(:insult => text)
-			new.save
-
-			m.reply "Added"
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end 
-
-	match /remove insult (\d+)/i, method: :del_insult
-	def del_insult(m, number)
-		return unless check_admin(m.user)
-		begin
-			old = InsultDB.first(:id => number.to_i)
-			old.destroy! unless old.nil?
-
-			m.reply "Done", true
-		rescue
-			m.reply "Oops something went wrong", true
-			raise
-		end
-	end
-
-	match /list insults/i, method: :list_insults
-	def list_insults(m)
-		return unless check_admin(m.user)
-		begin
-			agent = Mechanize.new
-			rows = ""
-
-			InsultDB.all.each do |item|
-				rows = rows + item.id.to_s + ". " + item.insult + "\n"
+			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['location'] = nil
 			end
 
-			page = agent.get "http://p.sjis.me/"
-			form = page.forms.first
-			form.content = rows
-			page = agent.submit form
+			save_DB
 
-			m.reply page.search("//a[@name='plain']/@href").text, true
+			m.reply "Done", true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
 		end
-	end 
+	end
 
 end

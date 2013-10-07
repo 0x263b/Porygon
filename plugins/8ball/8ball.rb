@@ -5,7 +5,7 @@ class Eightball
 
 	match /8ball (.+)$/i
 	def execute (m, s)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		eightball = [
 			"It is certain",
@@ -28,7 +28,7 @@ class Eightball
 			"My sources say no",
 			"Outlook not so good",
 			"Very doubtful",
-			"Don't care, go away"
+			"Don't care, go away" # Don't tell anyone, but this 8ball is actually a 9ball!
 		]
 
 		begin

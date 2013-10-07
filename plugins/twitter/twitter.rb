@@ -51,23 +51,35 @@ class Twitter
 		end
 	end
 
+	def prepare_access_token(oauth_token, oauth_token_secret)
+		consumer = OAuth::Consumer.new($TWITTER_CONSUMER_KEY, $TWITTER_CONSUMER_SECRET, {:site => "http://api.twitter.com", :scheme => :header })
+		token_hash = { :oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret }
+		access_token = OAuth::AccessToken.from_hash(consumer, token_hash )
+
+		return access_token
+	end
+
+
 	def execute(m, query)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		begin
-			url = Nokogiri::XML(open("http://api.twitter.com/1/statuses/user_timeline.xml?screen_name=#{query}&count=1&include_rts=true&exclude_replies=true&include_entities=true", :read_timeout=>3).read)
+			access_token = prepare_access_token($TWITTER_ACCESS_TOKEN, $TWITTER_ACCESS_TOKEN_SECRET)
 
-			tweettext   = url.xpath("//status/text").text.gsub(/\s+/, ' ')
-			posted      = url.xpath("//status/created_at").text
-			name        = url.xpath("//statuses/status/user/name").text
-			screenname  = url.xpath("//statuses/status/user/screen_name").text
+			response = access_token.request(:get, "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{query}&count=1")
+			parsed_response = JSON.parse(response.body)
 
-			urls        = url.xpath("//status/entities/urls/url")
+			tweettext   = parsed_response[0]["text"].gsub(/\s+/, ' ')
+			posted      = parsed_response[0]["created_at"]
+			name        = parsed_response[0]["user"]["name"]
+			screenname  = parsed_response[0]["user"]["screen_name"]
+
+			urls = parsed_response[0]["entities"]["urls"]
 
 			urls.each do |rep|
-				shortened   = rep.xpath("url").text
-				expanded    = rep.xpath("expanded_url").text
-				tweettext   = tweettext.gsub(shortened, expanded)
+				short = rep["url"]
+				long  = rep["expanded_url"]
+				tweettext = tweettext.gsub(short, long)
 			end
 
 			time        = Time.parse(posted)

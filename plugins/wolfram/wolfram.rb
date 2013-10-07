@@ -6,11 +6,10 @@ class Wolfram
 	match /wa (.+)$/i
 
 	def execute(m, query)
-		return unless ignore_nick(m.user.nick).nil?
-		begin
+		return if ignore_nick(m.user.nick)
 
-			@bitly = Bitly.new($BITLYUSER, $BITLYAPI)
-			 
+		begin
+	 
 			@url = open("http://api.wolframalpha.com/v2/query?appid=#{$WOLFRAMAPI}&input=#{CGI.escape(query)}")
 			@url = Nokogiri::XML(@url)
 
@@ -19,7 +18,7 @@ class Wolfram
 			input  = ""
 			output = ""
 
-			more  = @bitly.shorten("http://www.wolframalpha.com/input/?i=#{CGI.escape(query)}")
+			more  = shorten_url("http://www.wolframalpha.com/input/?i=#{CGI.escape(query)}")
 
 			if success == "true"
 				input  = @url.xpath("//pod[@position='100']//plaintext[1]").text.gsub(/\s+/, ' ')
@@ -40,9 +39,16 @@ class Wolfram
 				reply = "Fucked if I know"
 			end
 
-			m.reply "Wolfram 7| %s 7| More info: %s" % [reply, more.shorten]
+			m.reply "Wolfram 7| %s 7| More info: %s" % [reply, more]
 		rescue
 			m.reply "Wolfram 7| Error"
 		end
+	end
+
+	def shorten_url(long)
+		url = URI.parse('http://mcro.us/s')
+		http = Net::HTTP.new(url.host, url.port)
+		response, body = http.post(url.path, long)
+		return response['location']
 	end
 end

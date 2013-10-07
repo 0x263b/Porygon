@@ -18,40 +18,44 @@ class Youtube
 		end
 	end
 
+	def shorten_url(long)
+		url = URI.parse('http://mcro.us/s')
+		http = Net::HTTP.new(url.host, url.port)
+		response, body = http.post(url.path, long)
+		return response['location']
+	end
+
+	def add_commas(digits)
+		digits.nil? ? 0 : digits.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+	end
+
 	def execute(m, query)
-		return unless ignore_nick(m.user.nick).nil?
+		return if ignore_nick(m.user.nick)
 
 		begin
-			bitly = Bitly.new($BITLYUSER, $BITLYAPI)
+			query = CGI.escape(query)
 
-			query = URI.escape(query)
+			url = open("http://gdata.youtube.com/feeds/api/videos?q=#{query}&max-results=3&v=2&prettyprint=flase&alt=json").read
+			hashed = JSON.parse(url)
 
-			@url = open("http://gdata.youtube.com/feeds/api/videos?q=#{query}&max-results=3&v=2&prettyprint=true&alt=rss")
-			@url = Nokogiri::XML(@url)
+			page_url = shorten_url("https://www.youtube.com/results?search_query=#{query}")
 
-			@page_url = bitly.shorten("https://www.youtube.com/results?search_query=#{query}")
+			name     = hashed["feed"]["entry"][0]["media$group"]["media$title"]["$t"]
+			id       = hashed["feed"]["entry"][0]["media$group"]["yt$videoid"]["$t"]
+			views    = hashed["feed"]["entry"][0]["yt$statistics"]["viewCount"]
+			likes    = hashed["feed"]["entry"][0]["yt$rating"] && hashed["feed"]["entry"][0]["yt$rating"]["numLikes"]
+			dislikes = hashed["feed"]["entry"][0]["yt$rating"] && hashed["feed"]["entry"][0]["yt$rating"]["numDislikes"]
+			rating   = hashed["feed"]["entry"][0]["gd$rating"] && hashed["feed"]["entry"][0]["gd$rating"]["average"]
+			length   = hashed["feed"]["entry"][0]["media$group"]["yt$duration"]["seconds"]
 
-			def search(number)
-				return if @url.xpath("//item[#{number}]/title").text.length < 1
+			views    = add_commas(views) 
+			likes    = add_commas(likes) 
+			dislikes = add_commas(dislikes)
 
-				name       = @url.xpath("//item[#{number}]/title").text
-				id         = @url.xpath("//item[#{number}]/media:group/yt:videoid").text
-				views      = @url.xpath("//item[#{number}]/yt:statistics/@viewCount").text
-				likes      = @url.xpath("//item[#{number}]/yt:rating/@numLikes").text
-				dislikes   = @url.xpath("//item[#{number}]/yt:rating/@numDislikes").text
-				rating     = @url.xpath("//item[#{number}]/gd:rating/@average").text
-				length     = @url.xpath("//item[#{number}]/media:group/yt:duration/@seconds").text
+			length   = length_in_minutes(length.to_i)
 
-				views      = views.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
-				likes      = likes.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
-				dislikes   = dislikes.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
-
-				length = length_in_minutes(length.to_i)
-
-				"YouTube 5| %s 5| %s 5| %s views 5| %s/5 (%s|%s) 5| http://youtu.be/%s 5| More results: %s" % [name, length, views, rating[0..2], likes, dislikes, id, @page_url.shorten]
-			end
-		
-			m.reply search(1)
+			m.reply "YouTube 5| %s 5| %s 5| %s views 5| %s/%s 5| http://youtu.be/%s 5| More results: %s" % 
+			[name, length, views, likes, dislikes, id, page_url]
 		rescue
 			m.reply "YouTube 5| Error: Could not find video"
 		end
