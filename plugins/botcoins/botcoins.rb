@@ -52,6 +52,8 @@ class BotCoins
 
 		update_time(m.user.nick)
 
+		return if nick == m.user.nick
+		
 		theft = exponential
 
 		if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
