@@ -142,8 +142,8 @@ require_relative'./plugins/horoscopes/horoscope.rb'              # Horoscope
 
 bot = Cinch::Bot.new do
 	configure do |c|
-		c.plugins.prefix    = /^:/
-		c.server            = "irc.rizon.us"
+		c.plugins.prefix    = /^:/ # Replace : with the prefix you want
+		c.server            = "irc.rizon.net"
 		c.port              = 6697
 		c.ssl.use           = true
 		c.ssl.verify        = false
