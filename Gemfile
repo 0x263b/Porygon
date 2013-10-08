@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+gem 'cinch'
+gem 'mechanize'
+gem 'nokogiri'
+gem 'json'
+gem 'oauth'
