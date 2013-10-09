@@ -53,7 +53,7 @@ class BotCoins
 		update_time(m.user.nick)
 
 		return if nick == m.user.nick
-		
+
 		theft = exponential
 
 		if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
@@ -66,11 +66,7 @@ class BotCoins
 				m.user.notice "#{nick} is out of botcoins!"
 			end
 		else
-			$DataBase['users'] << {"nick"=> nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
-			$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
-			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += theft
-
-			m.user.notice "You stole #{theft} botcoins from #{nick}!"
+			m.user.notice "#{nick} is out of botcoins!"
 		end
 
 		save_DB
