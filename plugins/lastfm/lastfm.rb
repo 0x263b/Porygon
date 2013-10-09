@@ -24,15 +24,12 @@ class Lastfm
 			end
 		else
 			if $DataBase['users'].find{ |h| h['nick'] == param.downcase }
-				username = $DataBase['users'].find{ |h| h['nick'] == param.downcase }['lastfm']
-				if username.nil?
-					return param.strip
-				else
-					return username
-				end
+				return $DataBase['users'].find{ |h| h['nick'] == param.downcase }['lastfm']
+			else
+				return param.strip
 			end
 		end
-	end 
+	end
 
 
 

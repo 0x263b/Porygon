@@ -1,8 +1,5 @@
 # encoding: utf-8
 
-Encoding.default_external = "UTF-8"
-Encoding.default_internal = "UTF-8"
-
 class Weather
 	include Cinch::Plugin
 
@@ -24,6 +21,8 @@ class Weather
 					m.reply "location not provided nor on file. Use -set location location to save your location."
 				return nil
 			end
+		else
+			return param.strip
 		end
 	end 
 
