@@ -9,7 +9,6 @@ class BotCoins
 
 	match /mine/i, method: :mine, :react_on => :channel
 	def mine(m)
-		puts 'mining'
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 
 		update_time(m.user.nick)
@@ -40,9 +39,7 @@ class BotCoins
 			balance = $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins']
 			m.reply "#{nick} has mined #{balance} botcoins"
 		else
-			$DataBase['users'] << {"nick"=> nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
-			balance = $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins']
-			m.reply "#{nick} has mined #{balance} botcoins"
+			m.reply "#{nick} hasn't mined any botcoins"
 		end
 	end
 
@@ -56,12 +53,16 @@ class BotCoins
 
 		theft = exponential
 
-		if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
+		if nick.downcase == bot.nick.downcase
+			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
+		elsif $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
 			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 0
 				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
 				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += theft
 
-				m.user.notice "You stole #{theft} botcoins from #{nick}!"
+				balance = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins']
+
+				m.user.notice "You stole #{theft} botcoin(s) from #{nick}, giving you a total of #{balance}"
 			else
 				m.user.notice "#{nick} is out of botcoins!"
 			end
