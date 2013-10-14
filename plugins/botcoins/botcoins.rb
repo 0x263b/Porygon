@@ -51,6 +51,7 @@ class BotCoins
 			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
 		elsif $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
 			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 0
+				return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase } and $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] <= 0
 
 				outcome = Random.rand(10)
 
@@ -61,8 +62,8 @@ class BotCoins
 
 					theft = exponential(target/5)
 
-					$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
 					$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += theft
+					$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
 					
 					m.user.notice "You successfully hack into #{nick}'s botcoin account and transfer #{theft}."
 				when 1
@@ -125,7 +126,8 @@ class BotCoins
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 		return if nick == m.user.nick
 
-		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+		m.user.refresh
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 100)
 			m.channel.kick(nick, "Requested (#{m.user.nick})")
 
@@ -141,7 +143,8 @@ class BotCoins
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 		return if nick == m.user.nick
 
-		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+		m.user.refresh
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 300)
 			baddie = User(nick);
 			m.channel.ban(baddie.mask("*!*@%h"));
@@ -158,7 +161,8 @@ class BotCoins
 	def topic_coins(m, message)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 
-		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+		m.user.refresh
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 50)
 			m.channel.topic= message
 
