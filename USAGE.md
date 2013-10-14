@@ -16,6 +16,7 @@
 * [Horoscope](#horoscope)
 * [Botcoins](#botcoins)
 * [URL Parser](#url-parser)
+* [Admin functions](#admin-functions)
 
 ***
 
@@ -280,3 +281,152 @@ Returns the type, size, and (sometimes) filename of a file URL.
 	http://ompldr.org/vNmhrdA
 	File "omg.png" image/png; charset=binary 126.9 KB (ompldr.org)
 
+
+---
+### Admin functions
+These functions use the bot's nick as their prefix. The examples assume the nick is *Porygon*
+
+Change the bot's nick
+
+**Porygon:** *nick*
+	
+	Porygon: nick Magneton
+	* Porygon changes nick to Magneton	
+
+Quit
+
+**Porygon:** **quit** *message*
+
+	Porygon: quit bye bye
+	* Porygon has quit (bye bye)
+	
+Message a user
+
+**Porygon:** **msg** *user* *your message*
+
+	Porygon: msg Cbbleh you are mum
+	<Porygon> you are mum
+	
+Say something in a channel
+
+**Porygon:** **say** *#channel* *your message*
+
+	Porygon: say #DEVELOPERS hello!
+	<Porygon> hello!
+	
+Kick a user
+
+**Porygon:** **kick** *user* *reason*
+
+	Porygon: kick Cbbleh >being this white
+	* Porygon has kicked Cbbleh from the channel (>being this white)
+	
+Ban a user
+
+**Porygon:** **ban** *user* *reason*
+
+	Porygon: ban Cbbleh get out already
+	* Porygon sets mode +b Cbbleh*!*@*
+	* Porygon has kicked Cbbleh (get out already)
+	
+Ignore a user
+
+**Porygon:** **ignore** *nick*
+
+	Porygon: ignore Cbbleh
+	<Porygon> I never liked him anyway
+	
+Unignore a user
+
+**Porygon:** **unignore** *nick*
+
+	Porygon: unignore Cbbleh
+	<Porygon> Sorry about that
+	
+Pastes a list of ignored users to [mcro.us](http://mcro.us)
+
+**Porygon:** **list ignores**
+
+	Porygon: list ignores
+
+Adds a user to the admin list
+
+**Porygon:** **add admin** *user*
+
+	Porygon: add admin cocaine
+	<Porygon> A new master!
+	
+Removes a user from the admin list
+
+**Porygon:** **remove admin** *user*
+
+	Porygon: remove admin cocaine
+	<Porygon> I never liked him anyway
+	
+Pastes a list of bot admins to [mcro.us](http://mcro.us)
+
+**Porygon:** **list admins**
+
+	Porygon: list admins
+	
+Enables the URL parser for the channel
+
+**Porygon:** **passive on** *channel*
+
+	Porygon: passive on
+	<Porygon> Now reacting to URIs
+	
+Disables the URL parser for the channel
+
+**Porygon:** **passive off** *channel*
+
+	Porygon: passive off
+	<Porygon> No longer reacting to URIs
+	
+Enables showing info for file URLs in a channel
+
+**Porygon:** **file info on** *channel*
+
+	Porygon: file info on
+	<Porygon> Now reacting to file URIs
+	
+Disables showing info for file URLs in a channel
+
+**Porygon:** **file info off** *channel*
+
+	Porygon: file info off
+	<Porygon> No longer reacting to file URIs
+	
+Joins a channel and adds it to auto join
+
+**Porygon:** **join** *channel*
+
+	Porygon: join #foobar
+	* Porygon has joined #foobar
+	
+Parts a channel and removes it from auto join
+
+**Porygon:** **part** *channel*
+
+	Porygon: part
+	* Porygon has left the channel
+	
+Pastes a list of the channels to [mcro.us](http://mcro.us)
+
+**Porygon:** **list channels**
+
+	Porygon: list channels
+	
+Removes a user's last.fm from the database
+
+**Porygon:** **remove lastfm** *user*
+
+	Porygon: remove lastfm Cbbleh
+	<Porygon> Done
+	
+Removes a user's location from the database
+
+**Porygon:** **remove location** *user*
+
+	Porygon: remove location Cbbleh
+	<Porygon> Done
