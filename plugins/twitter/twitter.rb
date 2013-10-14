@@ -66,7 +66,7 @@ class Twitter
 		begin
 			access_token = prepare_access_token($TWITTER_ACCESS_TOKEN, $TWITTER_ACCESS_TOKEN_SECRET)
 
-			response = access_token.request(:get, "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{query}&count=1")
+			response = access_token.request(:get, "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{query}&count=1&exclude_replies=true")
 			parsed_response = JSON.parse(response.body)
 
 			tweettext   = parsed_response[0]["text"].gsub(/\s+/, ' ')
