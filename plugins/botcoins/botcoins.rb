@@ -127,7 +127,7 @@ class BotCoins
 
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 100)
-			User('chanserv').send("KICK #{m.channel} #{nick}")
+			m.channel.kick(nick, "Requested (#{m.user.nick})")
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 100
 
@@ -143,7 +143,9 @@ class BotCoins
 
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 300)
-			User('chanserv').send("BAN #{m.channel} #{nick}")
+			baddie = User(nick);
+			m.channel.ban(baddie.mask("*!*@%h"));
+			m.channel.kick(nick, "Requested (#{m.user.nick})")
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 300
 
@@ -152,13 +154,13 @@ class BotCoins
 		end
 	end
 
-	match /topic (\S+)/i, method: :topic_coins, :react_on => :channel
+	match /topic (.+)/i, method: :topic_coins, :react_on => :channel
 	def topic_coins(m, message)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 50)
-			User('chanserv').send("TOPIC #{m.channel} #{message}")
+			m.channel.topic= message
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 50
 
