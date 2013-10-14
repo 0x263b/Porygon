@@ -11,14 +11,12 @@ class BotCoins
 	def mine(m)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 
-		update_time(m.user.nick)
-
-		mined = exponential
+		mined = exponential(5)
 
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += mined
 		else
-			$DataBase['users'] << {"nick"=> item.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+			$DataBase['users'] << {"nick"=> nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += mined		
 		end
 
@@ -47,22 +45,44 @@ class BotCoins
 	def loot(m, nick)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
 
-		update_time(m.user.nick)
-
 		return if nick == m.user.nick
-
-		theft = exponential
 
 		if nick.downcase == bot.nick.downcase
 			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
 		elsif $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
 			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 0
-				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
-				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += theft
 
-				balance = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins']
+				outcome = Random.rand(10)
 
-				m.user.notice "You stole #{theft} botcoin(s) from #{nick}, giving you a total of #{balance}"
+				case outcome
+				when 0
+					# Successful theft
+					target = $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins']
+
+					theft = exponential(target/5)
+
+					$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
+					$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += theft
+					
+					m.user.notice "You successfully hack into #{nick}'s botcoin account and transfer #{theft}."
+				when 1
+					# Caught by the FBI
+					fine = exponential(15)
+					$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= fine
+
+					m.user.notice "The bank becomes aware of your attempts and alerts the police. The courts fine you #{fine} botcoins."
+				when 2
+					# Get looted while lotting
+					assailant = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins']
+					loss = exponential(assailant/8)
+					$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= loss
+
+					m.user.notice "While you struggle at guessing #{nick}'s PIN an unidentified cybercriminal compromizes your account and gets away with #{loss} botcoins."
+				when 3..9
+					# Nothing happens
+					m.user.notice "You attempt to gain access to #{nick}'s account but fail to get past the login screen"
+				end
+
 			else
 				m.user.notice "#{nick} is out of botcoins!"
 			end
@@ -71,6 +91,80 @@ class BotCoins
 		end
 
 		save_DB
+	end
+
+	match /give (\S+) (\d+)/i, method: :give, :react_on => :channel
+	def give(m, nick, amount)
+		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
+
+		return if nick == m.user.nick
+
+		amount = amount.to_i
+		m.user.refresh
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < amount)
+
+			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
+				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] += amount
+			else
+				$DataBase['users'] << {"nick"=> nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+				$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] += amount
+			end
+
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= amount
+
+			m.user.notice "Transfered #{amount} botcoins to #{nick}"
+			save_DB
+		else
+			m.user.notice "I'm afraid I can't let you do that, \"#{m.user.nick}\""
+		end
+	end
+
+	match /kick (\S+)/i, method: :kick_coins, :react_on => :channel
+	def kick_coins(m, nick)
+		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
+		return if nick == m.user.nick
+
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 100)
+			User('chanserv').send("KICK #{m.channel} #{nick}")
+
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 100
+
+			m.user.notice "The deed is done"
+			save_DB
+		end
+	end
+
+	match /ban (\S+)/i, method: :ban_coins, :react_on => :channel
+	def ban_coins(m, nick)
+		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
+		return if nick == m.user.nick
+
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 300)
+			User('chanserv').send("BAN #{m.channel} #{nick}")
+
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 300
+
+			m.user.notice "The deed is done"
+			save_DB
+		end
+	end
+
+	match /topic (\S+)/i, method: :topic_coins, :react_on => :channel
+	def topic_coins(m, message)
+		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
+
+		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 50)
+			User('chanserv').send("TOPIC #{m.channel} #{message}")
+
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 50
+
+			m.user.notice "The deed is done"
+			save_DB
+		end
 	end
 
 	def update_time(nick)
@@ -88,7 +182,7 @@ class BotCoins
 		end
 	end
 
-	def exponential
-		(-5 * Math.log(rand)).ceil
+	def exponential(mean)
+		(-mean * Math.log(rand)).ceil if mean > 0
 	end
 end

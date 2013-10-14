@@ -137,7 +137,7 @@ Translates *text* using bing translate
 
 **-tr/-translate** *from to text*
 
-	>-translate en fr pig disgusting
+	-translate en fr pig disgusting
 	Translate | en=>fr | "porc écoeurant"
 
 | code | Language           | code | Language           | code | Language |
@@ -240,6 +240,35 @@ Checks the account balance for *user*. Checks your balance if no *user* provided
 	<jewface> -balance
 	<Porygon> jewface has mined 14 botcoins 
 	
+Gives *user* *n* botcoins from your stash
+
+**-give** *user* *n*
+
+	-give Cbbleh 5
+	Transfered 5 botcoins to Cbbleh
+
+Sets the channel topic in exchange for 50 botcoins
+
+**-topic** *message*
+
+	-topic I'm rich, b"tch!
+	* Porygon sets the topic to "I'm rich, b"tch"
+
+Kicks *user* in exchange for 100 botcoins
+
+**-kick** *user*
+
+	-kick Cbbleh
+	* Chanserv has kicked Cbbleh
+
+Bans *user* in exchange for 300 botcoins
+
+**-ban** *user*
+
+	-ban Cbbleh
+	* Chanserv sets mode +b Cbbleh*!*@*
+	* Chanserv has kicked Cbbleh
+
 
 ### URL Parser
 Returns the title of a page and the host for html URLs.
