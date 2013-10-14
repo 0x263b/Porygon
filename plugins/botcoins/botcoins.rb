@@ -10,7 +10,7 @@ class BotCoins
 	match /mine/i, method: :mine, :react_on => :channel
 	def mine(m)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-
+		update_time(m.user.nick)
 		mined = exponential(5)
 
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
@@ -44,8 +44,8 @@ class BotCoins
 	match /loot (\S+)/i, method: :loot, :react_on => :channel
 	def loot(m, nick)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-
 		return if nick == m.user.nick
+		update_time(m.user.nick)
 
 		if nick.downcase == bot.nick.downcase
 			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
@@ -97,7 +97,6 @@ class BotCoins
 	match /give (\S+) (\d+)/i, method: :give, :react_on => :channel
 	def give(m, nick, amount)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-
 		return if nick == m.user.nick
 
 		amount = amount.to_i
