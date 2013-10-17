@@ -13,7 +13,7 @@ class UserSet
 			if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['lastfm'] = username.downcase
 			else
-				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> username.downcase, "location"=> nil, "karma"=> 0}
+				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> username.downcase, "location"=> nil, "botcoins"=> 0}
 			end
 
 			save_DB
@@ -35,7 +35,7 @@ class UserSet
 			if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['location'] = areacode.downcase
 			else
-				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> areacode.downcase, "karma"=> 0}
+				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> areacode.downcase, "botcoins"=> 0}
 			end
 
 			save_DB

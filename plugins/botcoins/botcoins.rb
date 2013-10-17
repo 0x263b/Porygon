@@ -43,8 +43,7 @@ class BotCoins
 
 	match /loot (\S+)/i, method: :loot, :react_on => :channel
 	def loot(m, nick)
-		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-		return if nick == m.user.nick
+		return if ignore_nick(m.user.nick) or check_time(m.user.nick) or (nick == m.user.nick)
 		update_time(m.user.nick)
 
 		if nick.downcase == bot.nick.downcase
@@ -96,8 +95,7 @@ class BotCoins
 
 	match /give (\S+) (\d+)/i, method: :give, :react_on => :channel
 	def give(m, nick, amount)
-		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-		return if nick == m.user.nick
+		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
 
 		amount = amount.to_i
 		m.user.refresh
@@ -122,8 +120,7 @@ class BotCoins
 
 	match /kick (\S+)/i, method: :kick_coins, :react_on => :channel
 	def kick_coins(m, nick)
-		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-		return if nick == m.user.nick
+		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
 
 		m.user.refresh
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
@@ -139,8 +136,7 @@ class BotCoins
 
 	match /ban (\S+)/i, method: :ban_coins, :react_on => :channel
 	def ban_coins(m, nick)
-		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-		return if nick == m.user.nick
+		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
 
 		m.user.refresh
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
@@ -158,7 +154,7 @@ class BotCoins
 
 	match /topic (.+)/i, method: :topic_coins, :react_on => :channel
 	def topic_coins(m, message)
-		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
+		return if ignore_nick(m.user.nick)
 
 		m.user.refresh
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
