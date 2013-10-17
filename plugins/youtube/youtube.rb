@@ -35,7 +35,7 @@ class Youtube
 		begin
 			query = CGI.escape(query)
 
-			url = open("http://gdata.youtube.com/feeds/api/videos?q=#{query}&max-results=3&v=2&prettyprint=flase&alt=json").read
+			url = open("http://gdata.youtube.com/feeds/api/videos?q=#{query}&max-results=1&v=2&prettyprint=flase&alt=json").read
 			hashed = JSON.parse(url)
 
 			page_url = shorten_url("https://www.youtube.com/results?search_query=#{query}")
