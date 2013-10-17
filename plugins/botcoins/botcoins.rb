@@ -27,6 +27,7 @@ class BotCoins
 		m.user.notice "You have mined #{mined} botcoin(s), giving you a total of #{balance}"
 	end
 
+
 	match /balance(?: (\S+))?/i, method: :balance, :react_on => :channel
 	def balance(m, nick)
 		return if ignore_nick(m.user.nick)
@@ -40,6 +41,7 @@ class BotCoins
 			m.reply "#{nick} hasn't mined any botcoins"
 		end
 	end
+
 
 	match /loot (\S+)/i, method: :loot, :react_on => :channel
 	def loot(m, nick)
@@ -93,6 +95,7 @@ class BotCoins
 		save_DB
 	end
 
+
 	match /give (\S+) (\d+)/i, method: :give, :react_on => :channel
 	def give(m, nick, amount)
 		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
@@ -118,6 +121,7 @@ class BotCoins
 		end
 	end
 
+
 	match /kick (\S+)/i, method: :kick_coins, :react_on => :channel
 	def kick_coins(m, nick)
 		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
@@ -133,6 +137,7 @@ class BotCoins
 			save_DB
 		end
 	end
+
 
 	match /ban (\S+)/i, method: :ban_coins, :react_on => :channel
 	def ban_coins(m, nick)
@@ -152,6 +157,7 @@ class BotCoins
 		end
 	end
 
+
 	match /topic (.+)/i, method: :topic_coins, :react_on => :channel
 	def topic_coins(m, message)
 		return if ignore_nick(m.user.nick)
@@ -168,9 +174,11 @@ class BotCoins
 		end
 	end
 
+
 	def update_time(nick)
 		@time[nick.downcase] = (Time.now.to_i + 30)
 	end
+
 
 	def check_time(nick)
 		nick = nick.downcase
