@@ -1,5 +1,10 @@
+#!/usr/bin/env ruby
+
 require 'rubygems'
-require 'bundler/setup'
 require 'daemons'
 
-Daemons.run('porygon.rb')
+options = {
+	:log_output => true
+}
+
+Daemons.run('porygon.rb', options)
