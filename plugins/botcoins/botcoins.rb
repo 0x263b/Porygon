@@ -16,7 +16,7 @@ class BotCoins
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += mined
 		else
-			$DataBase['users'] << {"nick"=> nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
+			$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += mined		
 		end
 
@@ -52,7 +52,7 @@ class BotCoins
 			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
 		elsif $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
 			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 0
-				return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase } and $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] <= 0
+				return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
 
 				outcome = Random.rand(10)
 
@@ -86,10 +86,10 @@ class BotCoins
 				end
 
 			else
-				m.user.notice "#{nick} is out of botcoins!"
+				m.user.notice "You become aware of #{nick}'s grim financial situation and decide to leave their botcoins alone."
 			end
 		else
-			m.user.notice "#{nick} is out of botcoins!"
+			m.user.notice "#{nick} doesn't have any botcoins!"
 		end
 
 		save_DB
