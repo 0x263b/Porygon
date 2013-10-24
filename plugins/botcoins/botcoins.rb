@@ -51,8 +51,8 @@ class BotCoins
 		if nick.downcase == bot.nick.downcase
 			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
 		elsif $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
-			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 0
-				return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }
+			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 200
+				return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase } and $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] <= 0
 
 				outcome = Random.rand(10)
 
@@ -101,7 +101,7 @@ class BotCoins
 		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
 
 		amount = amount.to_i
-		m.user.refresh
+		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < amount)
 
@@ -114,7 +114,8 @@ class BotCoins
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= amount
 
-			m.user.notice "Transfered #{amount} botcoins to #{nick}"
+			m.user.notice "Transferred #{amount} botcoins to #{nick}"
+			User(nick).notice "Received #{amount} botcoins from #{m.user.nick}"
 			save_DB
 		else
 			m.user.notice "I'm afraid I can't let you do that, \"#{m.user.nick}\""
@@ -126,10 +127,14 @@ class BotCoins
 	def kick_coins(m, nick)
 		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
 
-		m.user.refresh
+		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 100)
+			baddie = User(nick)
+			m.channel.ban(baddie.mask("*!*@%h"))
 			m.channel.kick(nick, "Requested (#{m.user.nick})")
+			sleep 5
+			m.channel.unban(baddie.mask("*!*@%h"));
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 100
 
@@ -143,11 +148,11 @@ class BotCoins
 	def ban_coins(m, nick)
 		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
 
-		m.user.refresh
+		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 300)
-			baddie = User(nick);
-			m.channel.ban(baddie.mask("*!*@%h"));
+			baddie = User(nick)
+			m.channel.ban(baddie.mask("*!*@%h"))
 			m.channel.kick(nick, "Requested (#{m.user.nick})")
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 300
@@ -162,7 +167,7 @@ class BotCoins
 	def topic_coins(m, message)
 		return if ignore_nick(m.user.nick)
 
-		m.user.refresh
+		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
 			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 50)
 			m.channel.topic= message
