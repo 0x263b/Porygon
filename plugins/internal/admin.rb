@@ -125,6 +125,7 @@ class Admin
 		begin
 			if $DataBase['users'].find{ |h| h['nick'] == username.downcase }
 				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['admin'] = true
+				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['botcoins'] = 10000
 			else
 				$DataBase['users'] << {"nick"=> username.downcase, "admin"=> true, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
 			end
@@ -145,6 +146,7 @@ class Admin
 		begin
 			if $DataBase['users'].find{ |h| h['nick'] == username.downcase }
 				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['admin'] = false
+				$DataBase['users'].find{ |h| h['nick'] == username.downcase }['botcoins'] = 0
 			else
 				$DataBase['users'] << {"nick"=> username.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
 			end
@@ -273,7 +275,11 @@ class Admin
 		return unless check_admin(m.user)
 
 		begin
-			$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> true, "passive"=> true, "file_info"=> true}
+			if $DataBase['channels'].find{ |h| h['channel'] == channel.downcase }
+				$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }['auto_join'] = true
+			else
+				$DataBase['channels'] << {"channel"=> channel.downcase, "auto_join"=> true, "passive"=> true, "file_info"=> true}
+			end
 
 			save_DB
 
@@ -290,7 +296,7 @@ class Admin
 		channel ||= m.channel.to_s
 
 		begin
-			$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }["auto_join"] == false
+			$DataBase['channels'].find{ |h| h['channel'] == channel.downcase }["auto_join"] = false
 
 			save_DB
 
