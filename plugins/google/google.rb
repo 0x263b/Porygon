@@ -25,12 +25,4 @@ class Google
 
 		m.reply "Google 2| More results #{more} 2| Images: #{images}"
 	end
-
-	def shorten_url(long)
-		url = URI.parse('http://mcro.us/s')
-		http = Net::HTTP.new(url.host, url.port)
-		response, body = http.post(url.path, long)
-		return response['location']
-	end
-
 end

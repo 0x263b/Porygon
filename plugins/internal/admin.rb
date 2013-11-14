@@ -103,7 +103,7 @@ class Admin
 			rows = $DataBase['users'].find_all{ |h| h['ignored'] == true }
 			rows = JSON.pretty_generate rows
 
-			url = URI.parse('http://mcro.us/c')
+			url = URI.parse('http://mnn.im/c')
 			http = Net::HTTP.new(url.host, url.port)
 			response, body = http.post(url.path, rows)
 
@@ -167,7 +167,7 @@ class Admin
 			rows = $DataBase['users'].find_all{ |h| h['admin'] == true }
 			rows = JSON.pretty_generate rows
 
-			url = URI.parse('http://mcro.us/c')
+			url = URI.parse('http://mnn.im/c')
 			http = Net::HTTP.new(url.host, url.port)
 			response, body = http.post(url.path, rows)
 
@@ -313,7 +313,7 @@ class Admin
 		begin
 			rows = JSON.pretty_generate($DataBase['channels'])
 
-			url = URI.parse('http://mcro.us/c')
+			url = URI.parse('http://mnn.im/c')
 			http = Net::HTTP.new(url.host, url.port)
 			response, body = http.post(url.path, rows)
 

@@ -44,11 +44,4 @@ class Wolfram
 			m.reply "Wolfram 7| Error"
 		end
 	end
-
-	def shorten_url(long)
-		url = URI.parse('http://mcro.us/s')
-		http = Net::HTTP.new(url.host, url.port)
-		response, body = http.post(url.path, long)
-		return response['location']
-	end
 end

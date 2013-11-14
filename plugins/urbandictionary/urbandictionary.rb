@@ -5,13 +5,6 @@ class UrbanDictionary
 
 	match /u(?:r(?:ban)?)? (?:([1-7]{1}) )?(.+)/i, method: :urban
 
-	def shorten_url(long)
-		url = URI.parse('http://mcro.us/s')
-		http = Net::HTTP.new(url.host, url.port)
-		response, body = http.post(url.path, long)
-		return response['location']
-	end
-
 	def urban(m, number, word)
 		return if ignore_nick(m.user.nick)
 
@@ -25,9 +18,9 @@ class UrbanDictionary
 			urban = Nokogiri::HTML(open(url))
 			define = urban.search("//div[@class='definition']")[number.to_i-1].text.gsub(/\s+/, ' ')
 
-			if define.length > 255
+			if define.length > 250
 				more = shorten_url("http://www.urbandictionary.com/define.php?term=#{CGI.escape(word)}")
-				define = "#{define[0..255]}... #{more}"
+				define = "#{define[0..250]}... Read more: #{more}"
 			end
 
 			m.reply "UrbanDictionary 06| #{word} 06| #{define}"
