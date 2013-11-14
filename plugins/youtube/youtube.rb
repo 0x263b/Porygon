@@ -18,13 +18,6 @@ class Youtube
 		end
 	end
 
-	def shorten_url(long)
-		url = URI.parse('http://mcro.us/s')
-		http = Net::HTTP.new(url.host, url.port)
-		response, body = http.post(url.path, long)
-		return response['location']
-	end
-
 	def add_commas(digits)
 		digits.nil? ? 0 : digits.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
 	end
@@ -45,17 +38,24 @@ class Youtube
 			views    = hashed["feed"]["entry"][0]["yt$statistics"]["viewCount"]
 			likes    = hashed["feed"]["entry"][0]["yt$rating"] && hashed["feed"]["entry"][0]["yt$rating"]["numLikes"]
 			dislikes = hashed["feed"]["entry"][0]["yt$rating"] && hashed["feed"]["entry"][0]["yt$rating"]["numDislikes"]
-			rating   = hashed["feed"]["entry"][0]["gd$rating"] && hashed["feed"]["entry"][0]["gd$rating"]["average"]
 			length   = hashed["feed"]["entry"][0]["media$group"]["yt$duration"]["seconds"]
 
-			views    = add_commas(views) 
-			likes    = add_commas(likes) 
-			dislikes = add_commas(dislikes)
+			embed    = hashed["feed"]["entry"][0]["yt$accessControl"].find{|i| i["action"] == "embed"}
 
+			if embed["permission"] == "allowed"
+				video_url = "https://www.youtube.com/embed/#{id}"
+			else
+				video_url = "https://www.youtube.com/watch?v=#{id}"
+			end
+
+			views    = add_commas(views) 
+			votes    = likes.to_i + dislikes.to_i
+			rating   = ((likes.to_i+0.0)/votes)*100
+			rating   = rating.round.to_s + "%"
 			length   = length_in_minutes(length.to_i)
 
-			m.reply "YouTube 5| %s 5| %s 5| %s views 5| %s/%s 5| http://youtu.be/%s 5| More results: %s" % 
-			[name, length, views, likes, dislikes, id, page_url]
+			m.reply "YouTube 5| %s 5| %s 5| %s views 5| %s 5| %s 5| More results: %s" % 
+			[name, length, views, rating, video_url, page_url]
 		rescue
 			m.reply "YouTube 5| Error: Could not find video"
 		end
