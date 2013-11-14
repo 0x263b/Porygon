@@ -116,6 +116,17 @@ def check_admin(user)
 end
 
 
+# URL shortener
+# Note: short URLs expire after 14 days
+def shorten_url(long)
+	url = URI.parse('http://mnn.im/s')
+	http = Net::HTTP.new(url.host, url.port)
+	response, body = http.post(url.path, long)
+	return response['location']
+end
+
+
+
 # Internal
 require_relative'./plugins/internal/basic.rb'
 require_relative'./plugins/internal/admin.rb'    # Admin
@@ -126,7 +137,6 @@ require_relative'./plugins/internal/userset.rb'  # UserSet
 require_relative'./plugins/8ball/8ball.rb'                       # Eightball
 require_relative'./plugins/google/google.rb'                     # Google
 require_relative'./plugins/lastfm/lastfm.rb'                     # Lastfm
-require_relative'./plugins/google/gcalc.rb'                      # GCalc
 require_relative'./plugins/random/rand.rb'                       # Pick
 require_relative'./plugins/translate/translate.rb'               # Translate
 require_relative'./plugins/tvrage/tvrage.rb'                     # Tvrage
@@ -150,6 +160,7 @@ bot = Cinch::Bot.new do
 		c.nick              = $BOTNICK
 		c.realname          = $BOTNICK
 		c.user              = $BOTNICK
+		c.modes             = ["GRp"]
 		c.channels          = []
 		c.plugins.plugins   = [
 			Basic, 
@@ -167,7 +178,6 @@ bot = Cinch::Bot.new do
 			Google, 
 			Wolfram,
 			Tvrage,
-			GCalc,
 			BotCoins,
 			Horoscope
 		]
