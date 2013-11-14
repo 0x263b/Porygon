@@ -73,7 +73,7 @@ User info and overall charts for *user*
 **-lastfm** *user*
 
 	-lastfm Cbbleh
-	Last.fm | Cbbleh (23/m/) | 23,758 Scrobbles | Overall Top Artists: Coroner (838), Destruction (776), Queen (681), Robert de Visée (664), Johann Sebastian Bach (573)
+	Last.fm | Cbbleh (23/m/-) | 23,758 Scrobbles | Overall Top Artists: Coroner (838), Destruction (776), Queen (681), Robert de Visée (664), Johann Sebastian Bach (573)
 	
 
 Artist info (top tracks, tags, etc.) for *artist*
