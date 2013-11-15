@@ -36,9 +36,9 @@ class BotCoins
 
 		if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
 			balance = $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins']
-			m.reply "#{nick} has mined #{balance} botcoins"
+			m.reply "#{nick} has #{balance} botcoins"
 		else
-			m.reply "#{nick} hasn't mined any botcoins"
+			m.reply "#{nick} doesn't have any botcoins"
 		end
 	end
 
@@ -48,17 +48,20 @@ class BotCoins
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick) or (nick == m.user.nick)
 		update_time(m.user.nick)
 
-		if nick.downcase == bot.nick.downcase
+		if (nick.downcase == bot.nick.downcase)
+			# Don't loot the bot!
 			m.user.notice "1,8[!] The Federal Bureau of Investigation has logged a record of this chat along with the IP addresses of the participants due to potential violations of U.S. law. Reference no. 8429l271. 1,8[!]"
 		elsif $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
-			if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 200
-				return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase } and $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] <= 0
+			# Are you looting yourself?
+			# Do you have over 10 coins?
+			return if $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase } and $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] <= 9
 
-				outcome = Random.rand(10)
+			outcome = Random.rand(10)
 
-				case outcome
-				when 0
-					# Successful theft
+			case outcome
+			when 0
+				# Successful theft
+				if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] >= 1
 					target = $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins']
 
 					theft = exponential(target/5)
@@ -67,26 +70,27 @@ class BotCoins
 					$DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins'] -= theft
 					
 					m.user.notice "You successfully hack into #{nick}'s botcoin account and transfer #{theft}."
-				when 1
-					# Caught by the FBI
-					fine = exponential(15)
-					$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= fine
-
-					m.user.notice "The bank becomes aware of your attempts and alerts the police. The courts fine you #{fine} botcoins."
-				when 2
-					# Get looted while lotting
-					assailant = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins']
-					loss = exponential(assailant/8)
-					$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= loss
-
-					m.user.notice "While you struggle at guessing #{nick}'s PIN an unidentified cybercriminal compromizes your account and gets away with #{loss} botcoins."
-				when 3..9
-					# Nothing happens
-					m.user.notice "You attempt to gain access to #{nick}'s account but fail to get past the login screen"
+				else
+					m.user.notice "You successfully hack into #{nick}'s botcoin account only to find that it's empty! FUCKING POORFAGS!"
 				end
+			when 1..2
+				# Caught by the FBI
+				fine = exponential(15)
+				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= fine
+				$DataBase['users'].find{ |h| h['nick'] == bot.nick.downcase }['botcoins'] += fine
 
-			else
-				m.user.notice "You become aware of #{nick}'s grim financial situation and decide to leave their botcoins alone."
+				m.user.notice "The bank becomes aware of your attempts and alerts the police. The courts fine you #{fine} botcoins."
+			when 3
+				# Get looted while lotting
+				assailant = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins']
+				loss = exponential(assailant/8)
+				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= loss
+				$DataBase['users'].find{ |h| h['nick'] == bot.nick.downcase }['botcoins'] += loss
+
+				m.user.notice "While you struggle at guessing #{nick}'s PIN an unidentified cybercriminal compromizes your account and gets away with #{loss} botcoins."
+			when 4..9
+				# Nothing happens
+				m.user.notice "You attempt to gain access to #{nick}'s account but fail to get past the login screen"
 			end
 		else
 			m.user.notice "#{nick} doesn't have any botcoins!"
@@ -134,7 +138,7 @@ class BotCoins
 			m.channel.ban(baddie.mask("*!*@%h"))
 			m.channel.kick(nick, "Requested (#{m.user.nick})")
 			sleep 5
-			m.channel.unban(baddie.mask("*!*@%h"));
+			m.channel.unban(baddie.mask("*!*@%h"))
 
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 100
 
