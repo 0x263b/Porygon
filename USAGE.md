@@ -2,7 +2,6 @@
 ---
 ### Functions
 * [Google](#google)
-* [Google Calculator](#google-calculator)
 * [WolframAlpha](#wolframalpha)
 * [Youtube](#youtube)
 * [Lastfm](#lastfm)
@@ -30,15 +29,6 @@ Gets the first result from Google for *search query*
 	Google | Richard Stallman - Wikipedia, the free encyclopedia | http://en.wikipedia.org/wiki/Richard_Stallman
 	Google | More results http://mnn.im/ukioc | Images: http://mnn.im/u7w1r
 
-
-### Google Calculator
-Calculates *equation* in Google Calculator
-
-**-calc** *equation*
-
-	-calc 50 kg in lbs
-	Calc | 50 kilograms => 110.231131 pounds
-	
 
 ### WolframAlpha
 Finds the answer of *question* using WolfarmAlpha
@@ -117,7 +107,7 @@ Returns the currently playing/last scrobbled track for *user* and top artist tag
 	
 
 ### Weather
-Google Weather for *location*
+Yahoo Weather for *location*
 
 **-w/-we/-weather** *location*
 
