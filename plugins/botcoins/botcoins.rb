@@ -7,6 +7,21 @@ class BotCoins
 	end
 
 
+	match /botcoins/i, method: :total_coins, :react_on => :channel
+	def total_coins(m)
+		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
+		update_time(m.user.nick)
+
+		coins_in_circulation = 0
+
+		$DataBase['users'].each do |key| 
+			coins_in_circulation += key['botcoins']
+		end
+
+		m.reply "There are currently #{coins_in_circulation} botcoins in circulation"
+	end
+
+
 	match /mine/i, method: :mine, :react_on => :channel
 	def mine(m)
 		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
