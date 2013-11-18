@@ -28,7 +28,7 @@ Gets the first result from Google for *search query*
 	-google Richard Stallman
 	Google | Richard Stallman's Personal Page | http://stallman.org/
 	Google | Richard Stallman - Wikipedia, the free encyclopedia | http://en.wikipedia.org/wiki/Richard_Stallman
-	Google | More results http://mcro.us/ukioc | Images: http://mcro.us/u7w1r
+	Google | More results http://mnn.im/ukioc | Images: http://mnn.im/u7w1r
 
 
 ### Google Calculator
@@ -46,7 +46,7 @@ Finds the answer of *question* using WolfarmAlpha
 **-wa** *question*
 
 	-wa time in Bosnia
-	Wolfram | current time in Bosnia and Herzegovina => 8:41:47 pm CEST | Monday, October 7, 2013 | More info: http://mcro.us/ui6e7
+	Wolfram | current time in Bosnia and Herzegovina => 8:41:47 pm CEST | Monday, October 7, 2013 | More info: http://mnn.im/ui6e7
 
 
 ### Youtube
@@ -55,7 +55,7 @@ Gets the first result from Youtube for *search query*
 **-yt/-youtube** *search query*
 
 	-yt Richard Stallman interject
-	YouTube | I'd just like to interject... | 03:00 | 37,079 views | 269/5 | http://youtu.be/QlD9UBTcSW4 | More results: http://mcro.us/ubrov
+	YouTube | I'd just like to interject... | 03:00 | 37,079 views | 269/5 | http://youtu.be/QlD9UBTcSW4 | More results: http://mnn.im/ubrov
 
 
 ### Last.fm
@@ -220,6 +220,13 @@ Checks the horoscope for *user*. Checks your horoscope if no *user* provided.
 	
 
 ### Botcoins
+Checks how many botcoins are in circulation
+
+**-botcoins**
+
+	-botcoins
+	There are currently 10,541 botcoins in circulation
+
 Mines cyberspace for virtual currency
 
 **-mine**
@@ -343,7 +350,7 @@ Unignore a user
 	Porygon: unignore Cbbleh
 	<Porygon> Sorry about that
 	
-Pastes a list of ignored users to [mcro.us](http://mcro.us)
+Pastes a list of ignored users to [mnn.im](http://mnn.im)
 
 **Porygon:** **list ignores**
 
@@ -363,7 +370,7 @@ Removes a user from the admin list
 	Porygon: remove admin cocaine
 	<Porygon> I never liked him anyway
 	
-Pastes a list of bot admins to [mcro.us](http://mcro.us)
+Pastes a list of bot admins to [mnn.im](http://mnn.im)
 
 **Porygon:** **list admins**
 
@@ -411,7 +418,7 @@ Parts a channel and removes it from auto join
 	Porygon: part
 	* Porygon has left the channel
 	
-Pastes a list of the channels to [mcro.us](http://mcro.us)
+Pastes a list of the channels to [mnn.im](http://mnn.im)
 
 **Porygon:** **list channels**
 
