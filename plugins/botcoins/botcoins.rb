@@ -18,6 +18,8 @@ class BotCoins
 			coins_in_circulation += key['botcoins']
 		end
 
+		coins_in_circulation = add_commas(coins_in_circulation.to_s)
+
 		m.reply "There are currently #{coins_in_circulation} botcoins in circulation"
 	end
 
