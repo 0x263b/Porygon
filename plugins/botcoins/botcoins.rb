@@ -9,8 +9,7 @@ class BotCoins
 
 	match /botcoins/i, method: :total_coins, :react_on => :channel
 	def total_coins(m)
-		return if ignore_nick(m.user.nick) or check_time(m.user.nick)
-		update_time(m.user.nick)
+		return if ignore_nick(m.user.nick)
 
 		coins_in_circulation = 0
 
@@ -220,4 +219,9 @@ class BotCoins
 	def exponential(mean)
 		(-mean * Math.log(rand)).ceil if mean > 0
 	end
+
+	def add_commas(digits)
+		digits.nil? ? 0 : digits.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
+	end
+
 end
