@@ -134,12 +134,12 @@ Other weather functions will default to this location if none is provided.
 
 
 ### Translate
-Translates *text* using bing translate
+Translates *text* using [Bing translate](http://www.bing.com/translator) and provides a link to [Google Translate](http://translate.google.com/)
 
 **-tr/-translate** *from to text*
 
 	-translate en fr pig disgusting
-	Translate | en=>fr | "porc écoeurant"
+	Translate | http://mnn.im/uoo4u | en=>fr | "porc écoeurant"
 
 | code | Language           | code | Language           | code | Language |
 | ---: | :------------------- | ---: | :------------------- | ---:| :--------- |

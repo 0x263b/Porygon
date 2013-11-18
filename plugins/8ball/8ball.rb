@@ -28,7 +28,7 @@ class Eightball
 			"My sources say no",
 			"Outlook not so good",
 			"Very doubtful",
-			"Don't care, go away" # Don't tell anyone, but this 8ball is actually a 9ball!
+			"Don't care, go away"
 		]
 
 		begin
