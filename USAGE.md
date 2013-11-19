@@ -132,19 +132,22 @@ Translates *text* using [Bing translate](http://www.bing.com/translator) and pro
 	Translate | http://mnn.im/uoo4u | en=>fr | "porc écoeurant"
 
 | code | Language           | code | Language           | code | Language |
-| ---: | :------------------- | ---: | :------------------- | ---:| :--------- |
-| ar  | Arabic 			| ht  | Haitian			| ro  | Romanian | 
-| cs  | Czech 			| hu  | Hungarian			| es  | Spanish| 
-| da  | Danish 			| id  | Indonesian			| ru  | Russian| 
-| de  | German 			| it  | Italian 			| sk  | Slovak | 
-| en  | English			| ja  | Japanese 			| sl  | Slovene| 
-| et  | Estonian 			| ko  | Korean			| sv  | Swedish| 
-| fi  | Finnish			| lt  | Lithuanian			| th  | Thai| 
-| fr  | French			| lv  | Latvian 			| tr  | Turkish| 
-| nl  | Dutch				| no  | Norwegian 			| uk  | Ukrainian| 
-| el  | Greek 			| pl  | Polish			| vi  | Vietnamese | 
-| he  | Hebrew 			| pt  | Portuguese
-| zh-CHS | Chinese Simplified	| zh-CHT  | Chinese Traditional |  | | 
+| ---: | :----------------- | ---: | :----------------- | ---: | :------- |
+| ar   | Arabic				| hi   | Hindi		| pl   | Polish
+| bg   | Bulgarian			| mww  | Himong Daw		| pt   | Portuguese
+| ca   | Catalan				| hu   | Hungarian		| ro   | Romanian
+| zh-CHS| Chinese Simplified	| id   | Indonesian		| ru   | Russian
+| zh-CHT| Chinese Traditional | it   | Italian		| sk   | Slovak
+| cs   | Czech				| ja   | Japanese		| sl   | Slovenian
+| da   | Danish				| tlh  | Klingon		| es   | Spanish
+| nl   | Dutch				| tlh-Qaak| Klingon (plqaD)		| sv   | Swedish
+| en   | English				| ko   | Korean		| th   | Thai
+| et   | Estonian			| lv   | Latvian		| tr   | Turkish
+| fi   | Finnish				| lt   | Lithuanian		| uk   | Ukrainian
+| fr   | German				| ms   | Malay		| ur   | Urdu
+| el   | Greek				| mt   | Maltese		| vi   | Vietnamese
+| ht   | Haitian Creole		| no   | Norwegian
+| he   | Hebrew				| fa   | Persian
 
 
 ### Twitter
