@@ -215,7 +215,7 @@ class Uri
 			trip      = doc.search("//div[@id='pi#{postnumber}']//span[@class='postertrip']").text
 			reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
 			reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
-			image     = doc.search("//span[@id='fT#{postnumber}']/a[1]/@href").text
+			image     = doc.search("//div[@id='f#{postnumber}']/a[1]/@href").text
 			date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']/@data-utc").text
 
 			date = Time.at(date.to_i)
