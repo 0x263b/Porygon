@@ -11,7 +11,7 @@ class Tvrage
 		@retry = 2
 		begin
 			return unless @retry > 0
-			url = open("http://services.tvrage.com/tools/quickinfo.php?show=#{URI.escape(query)}").read
+			url = open("http://services.tvrage.com/tools/quickinfo.php?show=#{CGI.escape(query)}").read
 			linesArray=[] 
 			url.each_line {|line| linesArray.push line.gsub(/[\r\n]/, "") }
 

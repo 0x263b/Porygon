@@ -272,7 +272,7 @@ class Lastfm
 		return if ignore_nick(m.user.nick)
 
 		begin
-			artistevents = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=#{URI.escape(query)}&api_key="+$LASTFMAPI))
+			artistevents = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=#{CGI.escape(query)}&api_key="+$LASTFMAPI))
 
 			events        = artistevents.xpath("//event")[0..n]
 			locationlist = ""

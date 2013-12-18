@@ -35,7 +35,7 @@ class Weather
 		return if location.nil?
 
 		begin
-			argument = URI.escape(location)
+			argument = CGI.escape(location)
 
 			# Yahoo weather requires a WOEID
 			# This service lets you look up a location and gives a WOEID back

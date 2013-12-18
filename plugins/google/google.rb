@@ -8,11 +8,11 @@ class Google
 	def execute(m, query)
 		return if ignore_nick(m.user.nick)
 
-		more   = shorten_url("https://www.google.com/search?q=#{URI.escape(query)}")
-		images = shorten_url("https://www.google.com/search?tbm=isch&hl=en&q=#{URI.escape(query)}")
+		more   = shorten_url("https://www.google.com/search?q=#{CGI.escape(query)}")
+		images = shorten_url("https://www.google.com/search?tbm=isch&hl=en&q=#{CGI.escape(query)}")
 
 		begin
-			res = open("https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{URI.escape(query)}&userip=54.225.208.28", "Referer" => "https://mcro.us/").read
+			res = open("https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{CGI.escape(query)}&userip=54.225.208.28", "Referer" => "https://mcro.us/").read
 			hashed = JSON.parse(res)
 
 			for img in hashed["responseData"]["results"][0..1]
