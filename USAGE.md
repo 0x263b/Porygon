@@ -133,21 +133,20 @@ Translates *text* using [Bing translate](http://www.bing.com/translator) and pro
 
 | code | Language           | code | Language           | code | Language |
 | ---: | :----------------- | ---: | :----------------- | ---: | :------- |
-| ar   | Arabic					| hi   | Hindi				| ro   | Romanian
-| bg   | Bulgarian				| mww  | Himong Daw			| ru   | Russian
-| ca   | Catalan				| hu   | Hungarian			| sk   | Slovak
-| zh-CHS| Chinese Simplified	| id   | Indonesian			| sl   | Slovenian
-| zh-CHT| Chinese Traditional 	| it   | Italian			| es   | Spanish
-| cs   | Czech					| ja   | Japanese			| sv   | Swedish
-| da   | Danish					| ko   | Korean				| th   | Thai
-| nl   | Dutch					| lv   | Latvian			| tr   | Turkish
-| en   | English				| lt   | Lithuanian			| uk   | Ukrainian
-| et   | Estonian				| ms   | Malay				| ur   | Urdu
-| fi   | Finnish				| mt   | Maltese			| vi   | Vietnamese
-| fr   | German					| no   | Norwegian
-| el   | Greek					| fa   | Persian (Farsi) 	
-| ht   | Haitian Creole			| pl   | Polish
-| he   | Hebrew					| pt   | Portuguese
+| ar   | Arabic					| he   | Hebrew				| pl   | Polish	
+| bg   | Bulgarian				| hi   | Hindi				| pt   | Portuguese
+| ca   | Catalan				| mww  | Himong Daw			| ro   | Romanian
+| zh-CHS| Chinese Simplified	| hu   | Hungarian			| ru   | Russian
+| zh-CHT| Chinese Traditional 	| id   | Indonesian			| sk   | Slovak
+| cs   | Czech					| it   | Italian			| sl   | Slovenian
+| da   | Danish					| ja   | Japanese			| es   | Spanish
+| nl   | Dutch					| ko   | Korean				| sv   | Swedish
+| en   | English				| lv   | Latvian			| th   | Thai
+| et   | Estonian				| lt   | Lithuanian			| uk   | Ukrainian
+| fi   | Finnish				| ms   | Malay				| ur   | Urdu
+| fr   | French					| mt   | Maltese			| vi   | Vietnamese
+| de   | German					| no   | Norwegian
+| el   | Greek					| fa   | Persian (Farsi) 
 
 
 ### Twitter
