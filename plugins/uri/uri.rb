@@ -15,35 +15,35 @@ class Uri
 		case minutes
 		when 0..1      then "just now"
 		when 2..59     then "#{minutes.to_s} minutes ago"
-		when 60..1439        
+		when 60..1439
 			words = (minutes/60)
 			if words > 1
 				"#{words.to_s} hours ago"
 			else
 				"an hour ago"
 			end
-		when 1440..11519     
+		when 1440..11519
 			words = (minutes/1440)
 			if words > 1
 				"#{words.to_s} days ago"
 			else
 				"yesterday"
 			end
-		when 11520..43199    
+		when 11520..43199
 			words = (minutes/11520)
 			if words > 1
 				"#{words.to_s} weeks ago"
 			else
 				"last week"
 			end
-		when 43200..525599   
+		when 43200..525599
 			words = (minutes/43200)
 			if words > 1
 				"#{words.to_s} months ago"
 			else
 				"last month"
 			end
-		else                      
+		else
 			words = (minutes/525600)
 			if words > 1
 				"#{words.to_s} years ago"
@@ -110,7 +110,7 @@ class Uri
 				m.reply get_info(m, link)
 
 			rescue Mechanize::ResponseCodeError => ex
-				m.reply "Title 3| #{ex.response_code} Error 3| #{uri.host}" 
+				m.reply "Title 03|\u000F #{ex.response_code} Error 03|\u000F #{uri.host}" 
 			rescue
 				nil
 			end
@@ -124,7 +124,7 @@ class Uri
 
 			if link.start_with?("https")
 				http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-				http.use_ssl = true						
+				http.use_ssl = true	
 			end
 
 			http.open_timeout = 6 # in seconds
@@ -189,7 +189,7 @@ class Uri
 
 			type = response['content-type']
 
-			"File 3| %s%s %s 3| %s" % [filename, type, size, uri.host]
+			"File 03|\u000F %s%s %s 03|\u000F %s" % [filename, type, size, uri.host]
 		end
 
 	end
@@ -213,7 +213,7 @@ class Uri
 			capcode   = doc.search("//div[@id='pi#{postnumber}']//strong[contains(@class,'capcode')]").text
 			flag      = doc.search("//div[@id='pi#{postnumber}']//span[contains(concat(' ',normalize-space(@class),' '),' flag ')]/@title").text # http://pivotallabs.com/xpath-css-class-matching/
 			trip      = doc.search("//div[@id='pi#{postnumber}']//span[@class='postertrip']").text
-			reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "3").gsub(/<span class="spoiler"?[^>]*>/, "1,1").gsub("</span>", "")
+			reply     = doc.search("//div[@id='p#{postnumber}']/blockquote").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "03").gsub(/<span class="spoiler"?[^>]*>/, "01,01").gsub("</span>", "\u000F")
 			reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
 			image     = doc.search("//div[@id='f#{postnumber}']/a[1]/@href").text
 			date      = doc.search("//div[@id='p#{postnumber}']//span[@class='dateTime']/@data-utc").text
@@ -222,13 +222,13 @@ class Uri
 			date = minutes_in_words(date)
 
 			subject = subject+" " if subject != ""
-			reply = " 3| "+reply if reply != ""
+			reply = " 03|\u000F "+reply if reply != ""
 			reply = reply[0..160]+" ..." if reply.length > 160
-			image = " 3| File: https:"+image if image.length > 1
+			image = " 03|\u000F File: https:"+image if image.length > 1
 			flag = flag+" " if flag.length > 1
 			capcode = " "+capcode if capcode.length > 1
 
-			"4chan 3| %s3%s%s%s %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
+			"4chan 03|\u000F %s03%s%s%s\u000F %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
 
 		else # Board Index Title
 			link_generic(m, link)
@@ -264,12 +264,12 @@ class Uri
 
 				tweettext = CGI.unescape_html(tweettext)
 
-				"Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
+				"Twitter 12|\u000F #{name}\u000F (@#{screenname}) 12|\u000F #{tweettext} 12|\u000F Posted #{time}"
 			else
-				"Title 3| Twitter 3| twitter.com"
+				"Title 03|\u000F Twitter 03|\u000F twitter.com"
 			end
 		rescue
-			"Title 3| Twitter 3| twitter.com"
+			"Title 03|\u000F Twitter 03|\u000F twitter.com"
 		end
 	end
 
@@ -291,7 +291,7 @@ class Uri
 
 			rating   = ((likes.to_i+0.0)/votes.to_i)*100
 
-			"YouTube 5| %s 5| %s 5| %s views 5| %s%" % [name[0..140], length, views, rating.round]
+			"YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s%" % [name[0..140], length, views, rating.round]
 		rescue
 			link_generic(m, link)
 		end
@@ -305,7 +305,7 @@ class Uri
 		title = page.title.gsub(/\s+/, ' ').strip
 
 		uri = URI.parse(page.uri.to_s)
-		"Title 3| %s 3| %s" % [title[0..140], uri.host]
+		"Title 03|\u000F %s 03|\u000F %s" % [title[0..140], uri.host]
 	end
 
 #Class dismissed

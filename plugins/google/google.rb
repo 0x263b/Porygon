@@ -12,17 +12,19 @@ class Google
 		images = shorten_url("https://www.google.com/search?tbm=isch&hl=en&q=#{CGI.escape(query)}")
 
 		begin
-			res = open("https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{CGI.escape(query)}&userip=54.225.208.28", "Referer" => "https://mcro.us/").read
+			res = open("https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{CGI.escape(query)}").read
+			# You may need to add your server IP and refer to this query, eg:
+			# res = open("https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=#{CGI.escape(query)}&userip=31.220.24.71", "Referer" => "http://tfwnogf.info/").read
 			hashed = JSON.parse(res)
 
 			for img in hashed["responseData"]["results"][0..1]
-				title = img["title"].gsub(/<\/?b>/, '')
-				m.reply CGI.unescape_html("Google 2| #{title} 2| #{img["url"]}")
+				title = img["title"].gsub(/<b>/, '').gsub(/<\/b>/, "\u000F")
+				m.reply CGI.unescape_html("Google 02|\u000F #{title} 02|\u000F #{img["url"]}\u000F")
 			end 
 		rescue
 			nil
 		end
 
-		m.reply "Google 2| More results #{more} 2| Images: #{images}"
+		m.reply "Google 02|\u000F More results #{more}\u000F 02|\u000F Images: #{images}\u000F"
 	end
 end

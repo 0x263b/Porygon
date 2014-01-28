@@ -17,9 +17,9 @@ class Translate
 
 			result = url.xpath("//d:Text").text
 
-			m.reply "Translate 11| #{google_url} 11| #{from}=>#{to} 11| #{result}"
+			m.reply "Translate 11|\u000F #{google_url} 11|\u000F #{from}=>#{to} 11| #{result}"
 		rescue
-			m.reply "Translate 11| #{google_url} 11| Error: Could not get translation"
+			m.reply "Translate 11|\u000F #{google_url} 11|\u000F Error: Could not get translation"
 		end
 	end
 end

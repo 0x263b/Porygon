@@ -19,6 +19,7 @@ require 'date'
 require 'time'
 require 'cgi'
 
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 # Global vars
 $BOTNICK       = ""

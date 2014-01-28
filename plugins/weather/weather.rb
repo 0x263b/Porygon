@@ -11,14 +11,14 @@ class Weather
 				location = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['location']
 			
 				if location.nil?
-					m.reply "location not provided nor on file. Use -set location location to save your location."
+					m.reply "location not provided nor on file. Use -set location location\u000F to save your location."
 					return nil
 				else
 					return location
 				end
 			else
 				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
-					m.reply "location not provided nor on file. Use -set location location to save your location."
+					m.reply "location not provided nor on file. Use -set location location\u000F to save your location."
 				return nil
 			end
 		else
@@ -39,7 +39,7 @@ class Weather
 
 			# Yahoo weather requires a WOEID
 			# This service lets you look up a location and gives a WOEID back
-			url = Nokogiri::XML(open("http://where.yahooapis.com/v1/places.q('#{argument}')?appid="+$YAHOO_GEO).read)
+			url = Nokogiri::XML(open("http://where.yahooapis.com/v1/places.q('#{argument}')?appid=NNX2aErV34GtMtnxo1hu1Bk_aIpuf6M3olFfsSCuioHahzWMcgHAKkFP3lBwBxOiAz1TVpQ-").read)
 			woeid       = url.css('woeid').text
 			country     = url.css('country')[0]['code']
 
@@ -77,13 +77,13 @@ class Weather
 
 			region = ", "+region.to_s if region.to_s.length > 0
 
-			text = "%s%s 2| %s %s%s. Humidity: %s%s. Wind: %s %s 2| %s: %s %s%s/%s%s 2| %s: %s %s%s/%s%s" % 
+			text = "%s%s 02|\u000F %s %s%s. Humidity: %s%s. Wind: %s %s 02|\u000F %s\u000F: %s %s%s/%s%s 02|\u000F %s\u000F: %s %s%s/%s%s" % 
 					[city, region, condition, temp, units, humidity, '%', speed, wunits, day_one, text_one, high_one, units, low_one, units, day_two, text_two, high_two, units, low_two, units]
 
 		rescue 
 			text = "Error getting weather for #{loc}"
 		end
-		m.reply "Weather 2| #{text}"
+		m.reply "Weather 02|\u000F #{text}"
 	end
 
 end

@@ -39,9 +39,9 @@ class Wolfram
 				reply = "Fucked if I know"
 			end
 
-			m.reply "Wolfram 7| %s 7| More info: %s" % [reply, more]
+			m.reply "Wolfram 07|\u000F %s 07|\u000F More info: %s" % [reply, more]
 		rescue
-			m.reply "Wolfram 7| Error"
+			m.reply "Wolfram 07|\u000F Error"
 		end
 	end
 end

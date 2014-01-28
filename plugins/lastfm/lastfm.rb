@@ -12,14 +12,14 @@ class Lastfm
 				username = $DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['lastfm']
 			
 				if username.nil?
-					m.reply "last.fm username not provided nor on file. Use -set lastfm username to save your nick."
+					m.reply "last.fm username not provided nor on file. Use -set lastfm username\u000F to save your nick."
 					return nil
 				else
 					return username
 				end
 			else
 				$DataBase['users'] << {"nick"=> m.user.nick.downcase, "admin"=> false, "ignored"=> false, "lastfm"=> nil, "location"=> nil, "botcoins"=> 0}
-				m.reply "last.fm username not provided nor on file. Use -set lastfm username to save your nick."
+				m.reply "last.fm username not provided nor on file. Use -set lastfm username\u000F to save your nick."
 				return nil
 			end
 		else
@@ -29,7 +29,7 @@ class Lastfm
 				return param.strip
 			end
 		end
-	end
+	end 
 
 
 
@@ -60,9 +60,9 @@ class Lastfm
 			sex = "–" if sex.length < 1
 			location = "–" if location.length < 1
 
-			realname = ""+realname+" " if realname.length > 1
+			realname = ""+realname+"\u000F " if realname.length > 1
 
-			reply = "#{realname}#{user} (#{age}/#{sex}/#{location}) 4| #{playcount} Scrobbles 4| Overall Top Artists: "
+			reply = "#{realname}#{user} (#{age}/#{sex}/#{location}) 04|\u000F #{playcount} Scrobbles 04|\u000F Overall Top Artists: "
 
 			result = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=#{username}&period=overall&limit=5&api_key="+$LASTFMAPI, :read_timeout=>3).read)
 
@@ -84,7 +84,7 @@ class Lastfm
 		rescue
 			reply = "The user '#{username}' doesn't have a Last.fm account"
 		end
-		m.reply "Last.fm 4| #{reply}"
+		m.reply "Last.fm 04|\u000F #{reply}"
 	end
 
 
@@ -103,7 +103,7 @@ class Lastfm
 		begin
 			result = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=#{username}&period=7day&limit=5&api_key="+$LASTFMAPI, :read_timeout=>3).read)
 			top_artists = result.xpath("//topartists/artist")[0..4]
-			reply = "Top 5 Weekly artists for #{username} 4| "
+			reply = "Top 5 Weekly artists for #{username} 04|\u000F "
 			top_artists.each do |artist|
 				name = artist.xpath("name").text
 				count = artist.xpath("playcount").text
@@ -120,7 +120,7 @@ class Lastfm
 		rescue
 			reply = "The user '#{username}' doesn't have a Last.fm account"
 		end
-		m.reply "Last.fm 4| #{reply}"
+		m.reply "Last.fm 04|\u000F #{reply}"
 	end
 
 
@@ -156,7 +156,7 @@ class Lastfm
 			score = score[2..4]
 			scr = "#{score.to_i/10}.#{score.to_i % 10}"
 
-			reply = "#{userone} vs #{usertwo} 4| #{scr}% 4| #{commonlist}"
+			reply = "#{userone} vs #{usertwo} 04|\u000F #{scr}% 04| #{commonlist}"
 		rescue Timeout::Error
 			if retrys > 0
 				retrys = retrys - 1
@@ -167,7 +167,7 @@ class Lastfm
 		rescue
 			reply = "Error"
 		end
-		m.reply "Last.fm 4| #{reply}"
+		m.reply "Last.fm 04|\u000F #{reply}"
 	end
 
 
@@ -201,7 +201,7 @@ class Lastfm
 				taglist = taglist + "#{tag}, "
 			end
 			taglist = taglist[0..taglist.length-3]
-			taglist = "4| #{taglist}" if taglist != ""
+			taglist = "04|\u000F #{taglist}" if taglist != ""
 
 			if now == "true"
 				reply = "#{username} is playing: \"#{track}\" by #{artist}#{album} #{taglist}"
@@ -218,7 +218,7 @@ class Lastfm
 		rescue
 			reply = "Error"
 		end
-		m.reply "Last.fm 4| #{reply}"
+		m.reply "Last.fm 04|\u000F #{reply}"
 	end
 
 
@@ -245,7 +245,7 @@ class Lastfm
 				taglist = taglist + "#{tag}, "
 			end
 			taglist = taglist[0..taglist.length-3]
-			taglist = "Tagged as: #{taglist}. " if taglist != ""
+			taglist = "Tagged as\u000F: #{taglist}. " if taglist != ""
 
 			tracks = toptracks.xpath("//toptracks/track")
 			tracklist = ""
@@ -254,16 +254,16 @@ class Lastfm
 				tracklist = tracklist + "#{track}, "
 			end
 			tracklist = tracklist[0..tracklist.length-3]
-			tracklist = "Top tracks: #{tracklist}. " if tracklist != ""
+			tracklist = "Top tracks\u000F: #{tracklist}. " if tracklist != ""
 
 			plays     = plays.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
 			listeners = listeners.reverse.gsub(%r{([0-9]{3}(?=([0-9])))}, "\\1,").reverse
 
-			reply = "%s 4| %s plays, %s listeners 4| %s%s4| %s" % [artist, plays, listeners, tracklist, taglist, url]
+			reply = "%s 04|\u000F %s plays, %s listeners 04|\u000F %s%s04|\u000F %s" % [artist, plays, listeners, tracklist, taglist, url]
 		rescue
 			reply = "Error"
 		end
-		m.reply "Last.fm 4| #{reply}"
+		m.reply "Last.fm 04|\u000F #{reply}"
 	end
 
 
@@ -283,10 +283,11 @@ class Lastfm
 				locationlist = locationlist + "#{city}: #{date}, "
 			end
 			locationlist = locationlist[0..locationlist.length-3]
+			locationlist = "No upcoming events on file" if locationlist.length < 1
 
 			reply = "%s" % [locationlist]
 		end
-		m.reply "Upcoming events for #{query} 4| #{reply}"
+		m.reply "Upcoming events for #{query} 04|\u000F #{reply}"
 	end
 
 end

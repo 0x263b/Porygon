@@ -34,7 +34,7 @@ class Basic
 
 	match /help$/i, method: :help
 	def help(m)
-		m.reply "Function list: 12#{$BOTURL} Source: 12#{$BOTGIT} Need more help? Join 12#Developers", true
+		m.reply "Function list: 12#{$BOTURL}\u000F Source: 12#{$BOTGIT}\u000F", true
 	end
 
 end

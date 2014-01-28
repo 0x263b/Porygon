@@ -21,16 +21,16 @@ class Tvrage
 			started   = linesArray.grep(/^Started@/).to_s.gsub("Started@", " Started: ").gsub(/[\[\]\"]/, "")
 			ended     = linesArray.grep(/^Ended@/).to_s.gsub("Ended@", " Ended: ").gsub(/[\[\]\"]/, "")
 			latest    = linesArray.grep(/^Latest Episode@/).to_s.gsub("Latest Episode@", " Latest Ep: ").gsub(/[\[\]\"]/, "").gsub("^", " ")
-			nextep    = linesArray.grep(/^Next Episode@/).to_s.gsub("Next Episode@", " Next Ep: ").gsub(/[\[\]\"]/, "").gsub("^", " ")
+			nextep    = linesArray.grep(/^Next Episode@/).to_s.gsub("Next Episode@", " Next Ep:\u000F ").gsub(/[\[\]\"]/, "").gsub("^", " ")
 			classif   = linesArray.grep(/^Classification@/).to_s.gsub("Classification@", "").gsub(/[\[\]\"]/, "").gsub("^", " ")
-			status    = linesArray.grep(/^Status@/).to_s.gsub("Status@", " Status: ").gsub(/[\[\]\"]/, "").gsub("^", " ")
+			status    = linesArray.grep(/^Status@/).to_s.gsub("Status@", " Status:\u000F ").gsub(/[\[\]\"]/, "").gsub("^", " ")
 			genre     = linesArray.grep(/^Genres@/).to_s.gsub("Genres@", "").gsub(/[\[\]\"]/, "")
 			network   = linesArray.grep(/^Network@/).to_s.gsub("Network@", "").gsub(/[\[\]\"]/, "")
 			airs      = linesArray.grep(/^Airtime@/).to_s.gsub("Airtime@", " ").gsub(/[\[\]\"]/, "")
 
 			airs = "" if nextep.length < 1
 
-			m.reply "TVRage 07| #{showName} (#{classif} | #{genre}) #{network} #{premiered}#{status}#{nextep}#{airs}"
+			m.reply "TVRage 07|\u000F #{showName}\u000F (#{classif} | #{genre}) #{network} #{premiered}#{status}#{nextep}#{airs}"
 		rescue Timeout::Error
 			@retry = @retry-1
 			retry

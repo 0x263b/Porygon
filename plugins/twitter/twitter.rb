@@ -13,35 +13,35 @@ class Twitter
 		case minutes
 		when 0..1      then "just now"
 		when 2..59     then "#{minutes.to_s} minutes ago"
-		when 60..1439        
+		when 60..1439
 			words = (minutes/60)
 			if words > 1
 				"#{words.to_s} hours ago"
 			else
 				"an hour ago"
 			end
-		when 1440..11519     
+		when 1440..11519
 			words = (minutes/1440)
 			if words > 1
 				"#{words.to_s} days ago"
 			else
 				"yesterday"
 			end
-		when 11520..43199    
+		when 11520..43199
 			words = (minutes/11520)
 			if words > 1
 				"#{words.to_s} weeks ago"
 			else
 				"last week"
 			end
-		when 43200..525599   
+		when 43200..525599
 			words = (minutes/43200)
 			if words > 1
 				"#{words.to_s} months ago"
 			else
 				"last month"
 			end
-		else                      
+		else
 			words = (minutes/525600)
 			if words > 1
 				"#{words.to_s} years ago"
@@ -54,7 +54,7 @@ class Twitter
 	def prepare_access_token(oauth_token, oauth_token_secret)
 		consumer = OAuth::Consumer.new($TWITTER_CONSUMER_KEY, $TWITTER_CONSUMER_SECRET, {:site => "http://api.twitter.com", :scheme => :header })
 		token_hash = { :oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret }
-		access_token = OAuth::AccessToken.from_hash(consumer, token_hash )
+		access_token = OAuth::AccessToken.from_hash(consumer, token_hash)
 
 		return access_token
 	end
@@ -87,11 +87,11 @@ class Twitter
 
 			tweettext = CGI.unescape_html(tweettext)
 
-			m.reply "Twitter 12| #{name} (@#{screenname}) 12| #{tweettext} 12| Posted #{time}"
+			m.reply "Twitter 12|\u000F #{name}\u000F (@#{screenname}) 12|\u000F #{tweettext} 12|\u000F Posted #{time}"
 		rescue Timeout::Error
-			m.reply "Twitter 12| Timeout Error. Maybe twitter is down?"
+			m.reply "Twitter 12|\u000F Timeout Error. Maybe twitter is down?"
 		rescue
-			m.reply "Twitter 12| #{query} 12| Could not get tweet"
+			m.reply "Twitter 12|\u000F #{query} 12|\u000F Could not get tweet"
 		end
 	end
 end

@@ -42,22 +42,16 @@ class Youtube
 
 			embed    = hashed["feed"]["entry"][0]["yt$accessControl"].find{|i| i["action"] == "embed"}
 
-			if embed["permission"] == "allowed"
-				video_url = "https://www.youtube.com/embed/#{id}"
-			else
-				video_url = "https://www.youtube.com/watch?v=#{id}"
-			end
-
 			views    = add_commas(views) 
 			votes    = likes.to_i + dislikes.to_i
 			rating   = ((likes.to_i+0.0)/votes)*100
 			rating   = rating.round.to_s + "%"
 			length   = length_in_minutes(length.to_i)
 
-			m.reply "YouTube 5| %s 5| %s 5| %s views 5| %s 5| %s 5| More results: %s" % 
-			[name, length, views, rating, video_url, page_url]
+			m.reply "YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s 05|\u000F http://youtu.be/%s\u000F 05|\u000F More results: %s\u000F" % 
+			[name, length, views, rating, id, page_url]
 		rescue
-			m.reply "YouTube 5| Error: Could not find video"
+			m.reply "YouTube 05|\u000F Error: Could not find video"
 		end
 	end
 end
