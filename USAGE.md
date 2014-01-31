@@ -14,6 +14,7 @@
 * [8ball](#8ball)
 * [Horoscope](#horoscope)
 * [Botcoins](#botcoins)
+* [Blackjack](#blackjack)
 * [URL Parser](#url-parser)
 * [Admin functions](#admin-functions)
 
@@ -247,27 +248,57 @@ Gives *user* *n* botcoins from your stash
 	-give Cbbleh 5
 	Transfered 5 botcoins to Cbbleh
 
-Sets the channel topic in exchange for 50 botcoins
+Sets the channel topic in exchange for 30 botcoins
 
 **-topic** *message*
 
 	-topic I'm rich, b"tch!
 	* Porygon sets the topic to "I'm rich, b"tch"
 
-Kicks *user* in exchange for 100 botcoins
+Kicks *user* in exchange for 80 botcoins
 
 **-kick** *user*
 
 	-kick Cbbleh
 	* Chanserv has kicked Cbbleh
 
-Bans *user* in exchange for 300 botcoins
+Bans *user* in exchange for 250 botcoins
 
 **-ban** *user*
 
 	-ban Cbbleh
 	* Chanserv sets mode +b Cbbleh*!*@*
 	* Chanserv has kicked Cbbleh
+
+### Blackjack
+
+Makes a bet of *n* botcoins
+
+**-blackjack** *n*
+
+	-blackjack 10
+	Your hand: ["10♣", "J♥"] (20). Dealer's hand: Q♠.
+	
+Deals another card
+
+**-hit**
+
+	-hit
+	Your hand: ["10♣", "J♥", "A♠"] (21). Dealer's hand: Q♠.
+
+Stays
+
+**-stay**
+
+	-stay
+	DEALER BUST! Your hand: ["10♣", "J♥", "A♠"] (21). Dealer's hand: [ "Q♠", "5♠", "8♦"] (23).
+
+Give up and get back half your bet
+
+**-surrender**
+
+	-surrender
+	Better luck next time!
 
 
 ### URL Parser

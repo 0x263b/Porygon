@@ -149,14 +149,14 @@ class BotCoins
 
 		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
-			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 100)
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 80)
 			baddie = User(nick)
 			m.channel.ban(baddie.mask("*!*@%h"))
 			m.channel.kick(nick, "Requested (#{m.user.nick})")
 			sleep 5
 			m.channel.unban(baddie.mask("*!*@%h"))
 
-			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 100
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 80
 
 			m.user.notice "The deed is done"
 			save_DB
@@ -170,12 +170,12 @@ class BotCoins
 
 		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
-			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 300)
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 250)
 			baddie = User(nick)
 			m.channel.ban(baddie.mask("*!*@%h"))
 			m.channel.kick(nick, "Requested (#{m.user.nick})")
 
-			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 300
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 250
 
 			m.user.notice "The deed is done"
 			save_DB
@@ -189,10 +189,10 @@ class BotCoins
 
 		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
-			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 50)
+			return if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < 30)
 			m.channel.topic= message
 
-			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 50
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= 30
 
 			m.user.notice "The deed is done"
 			save_DB

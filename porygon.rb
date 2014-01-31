@@ -148,6 +148,7 @@ require_relative'./plugins/weather/weather.rb'                   # Weather
 require_relative'./plugins/wolfram/wolfram.rb'                   # Wolfram
 require_relative'./plugins/youtube/youtube.rb'                   # Youtube
 require_relative'./plugins/botcoins/botcoins.rb'                 # BotCoins
+require_relative'./plugins/botcoins/blackjack.rb'                # BlackJack
 require_relative'./plugins/horoscopes/horoscope.rb'              # Horoscope
 
 
@@ -180,6 +181,7 @@ bot = Cinch::Bot.new do
 			Wolfram,
 			Tvrage,
 			BotCoins,
+			BlackJack,
 			Horoscope
 		]
 	end
