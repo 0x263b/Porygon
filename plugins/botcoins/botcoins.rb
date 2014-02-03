@@ -19,7 +19,7 @@ class BotCoins
 
 		coins_in_circulation = add_commas(coins_in_circulation.to_s)
 
-		m.reply "There are currently #{coins_in_circulation} botcoins in circulation"
+		m.reply "There are currently #{coins_in_circulation}\u000F botcoins in circulation"
 	end
 
 
@@ -52,9 +52,9 @@ class BotCoins
 
 		if $DataBase['users'].find{ |h| h['nick'] == nick.downcase }
 			balance = $DataBase['users'].find{ |h| h['nick'] == nick.downcase }['botcoins']
-			m.reply "#{nick} has #{balance} botcoins"
+			m.reply "#{nick}\u000F has #{balance}\u000F botcoins"
 		else
-			m.reply "#{nick} doesn't have any botcoins"
+			m.reply "#{nick}\u000F doesn't have any botcoins"
 		end
 	end
 
