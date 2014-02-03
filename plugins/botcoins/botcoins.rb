@@ -145,7 +145,7 @@ class BotCoins
 
 	match /kick (\S+)/i, method: :kick_coins, :react_on => :channel
 	def kick_coins(m, nick)
-		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
+		return if ignore_nick(m.user.nick) or (nick == bot.nick)
 
 		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
@@ -166,7 +166,7 @@ class BotCoins
 
 	match /ban (\S+)/i, method: :ban_coins, :react_on => :channel
 	def ban_coins(m, nick)
-		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
+		return if ignore_nick(m.user.nick) or (nick == bot.nick)
 
 		m.user.refresh unless m.user.authed?
 		if $DataBase['users'].find{ |h| h['nick'] == m.user.authname.downcase }
