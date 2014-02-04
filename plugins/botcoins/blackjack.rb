@@ -42,7 +42,7 @@ class BlackJack
 		return total
 	end
 
-	# Counts aces in your hand (WIP)
+	# Counts aces in your hand
 	def aces_count(hand)
 		aces = 0
 
@@ -65,6 +65,16 @@ class BlackJack
 
 		return showing_hand
 	end
+
+	# Checks for a blackjack
+	def is_blackjack(hand)
+		if (hand.length == 2) and (hand_count(hand) == 21)
+			return true
+		else
+			return false
+		end
+	end
+
 
 	# Start a game
 	match /blackjack (\d+)/i, method: :blackjack_bet, :react_on => :channel
@@ -89,7 +99,7 @@ class BlackJack
 				deck = deck.shuffle
 
 				# deal the cards
-				@hand[m.user.nick] = { "player" => [ @deck[0], @deck[2] ], "dealer" => [ @deck[1], @deck[3] ], "bet" => bet }
+				@hand[m.user.nick] = { "player" => [ deck[0], deck[2] ], "dealer" => [ deck[1], deck[3] ], "bet" => bet }
 
 				deck.slice!(0..3)
 
@@ -131,6 +141,15 @@ class BlackJack
 		dealer_hand = hand_count(@hand[m.user.nick]["dealer"])
 		player_hand = hand_count(@hand[m.user.nick]["player"])
 
+		# Hit on a soft 17
+		dealer_aces = aces_count(@hand[m.user.nick]["dealer"])
+		if (dealer_hand == 17) and (dealer_aces == 1)
+			@hand[m.user.nick]["dealer"] << @hand[m.user.nick]["deck"][0]
+			dealer_hand = hand_count(@hand[m.user.nick]["dealer"])
+			@hand[m.user.nick]["deck"].slice!(0)
+			q += 1
+		end	
+
 		# Dealer hits until they have 17+
 		while (dealer_hand < 17)
 			@hand[m.user.nick]["dealer"] << @hand[m.user.nick]["deck"][0]
@@ -143,7 +162,16 @@ class BlackJack
 		if dealer_hand > 21
 			m.reply "#{m.user.nick}: Dealer bust\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 2)
-		
+
+		# Dealer Blackjack
+		elsif is_blackjack(@hand[m.user.nick]["dealer"]) and (is_blackjack(@hand[m.user.nick]["player"]) == false)
+			m.reply "#{m.user.nick}: Dealer blackjack\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
+
+		# Player Blackjack
+		elsif (is_blackjack(@hand[m.user.nick]["dealer"]) == false) and (is_blackjack(@hand[m.user.nick]["player"]))
+			m.reply "#{m.user.nick}: Blackjack\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 3)
+
 		# Tie
 		elsif dealer_hand == player_hand
 			m.reply "#{m.user.nick}: Draw\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
