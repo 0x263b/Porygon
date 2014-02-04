@@ -84,11 +84,16 @@ class BlackJack
 			if ($DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] < bet)
 				m.user.notice "You don't have that kind of money"
 			else
-				# shuffle the deck
-				@deck = @deck.shuffle
+				# shuffle the deck twice
+				deck = @deck.shuffle
+				deck = deck.shuffle
 
 				# deal the cards
 				@hand[m.user.nick] = { "player" => [ @deck[0], @deck[2] ], "dealer" => [ @deck[1], @deck[3] ], "bet" => bet }
+
+				deck.slice!(0..3)
+
+				@hand[m.user.nick]["deck"] = deck
 
 				# Take the money
 				$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] -= bet
@@ -104,9 +109,8 @@ class BlackJack
 		return if ignore_nick(m.user.nick) # ignore ignored users
 		return if (@hand.key?(m.user.nick) == false) # ignore users who don't have a hand
 
-		@deck = @deck.shuffle
-
-		@hand[m.user.nick]["player"] << @deck[0]
+		@hand[m.user.nick]["player"] << @hand[m.user.nick]["deck"][0]
+		@hand[m.user.nick]["deck"].slice!(0)
 
 		if hand_count(@hand[m.user.nick]["player"]) > 21
 			m.reply "#{m.user.nick}: Better luck next time\u000F | Your hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']) ]
@@ -123,15 +127,15 @@ class BlackJack
 		return if (@hand.key?(m.user.nick) == false) # ignore users who don't have a hand
 
 		q = 0
-		@deck = @deck.shuffle
 
 		dealer_hand = hand_count(@hand[m.user.nick]["dealer"])
 		player_hand = hand_count(@hand[m.user.nick]["player"])
 
-		# Dealer hits until they have over 17
+		# Dealer hits until they have 17+
 		while (dealer_hand < 17)
-			@hand[m.user.nick]["dealer"] << @deck[q]
+			@hand[m.user.nick]["dealer"] << @hand[m.user.nick]["deck"][0]
 			dealer_hand = hand_count(@hand[m.user.nick]["dealer"])
+			@hand[m.user.nick]["deck"].slice!(0)
 			q += 1
 		end
 
@@ -139,26 +143,23 @@ class BlackJack
 		if dealer_hand > 21
 			m.reply "#{m.user.nick}: Dealer bust\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 2)
-			@hand.delete(m.user.nick)
 		
 		# Tie
 		elsif dealer_hand == player_hand
 			m.reply "#{m.user.nick}: Draw\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += @hand[m.user.nick]["bet"]
-			@hand.delete(m.user.nick)
 		
 		# Player wins
 		elsif player_hand > dealer_hand
 			m.reply "#{m.user.nick}: You win\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 2)
-			@hand.delete(m.user.nick)
-
+			
 		# Player loses
 		else 
 			m.reply "#{m.user.nick}: Better luck next time\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
-			@hand.delete(m.user.nick)
 		end
 
+		@hand.delete(m.user.nick)
 		save_DB
 	end			
 
