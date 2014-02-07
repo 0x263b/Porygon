@@ -158,19 +158,19 @@ class BlackJack
 			q += 1
 		end
 
-		# Dealer Bust
-		if dealer_hand > 21
-			m.reply "#{m.user.nick}: Dealer bust\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
-			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 2)
-
 		# Dealer Blackjack
-		elsif is_blackjack(@hand[m.user.nick]["dealer"]) and (is_blackjack(@hand[m.user.nick]["player"]) == false)
+		if is_blackjack(@hand[m.user.nick]["dealer"]) and (is_blackjack(@hand[m.user.nick]["player"]) == false)
 			m.reply "#{m.user.nick}: Dealer blackjack\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
 
 		# Player Blackjack
 		elsif (is_blackjack(@hand[m.user.nick]["dealer"]) == false) and (is_blackjack(@hand[m.user.nick]["player"]))
 			m.reply "#{m.user.nick}: Blackjack\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
 			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 3)
+
+		# Dealer Bust
+		elsif dealer_hand > 21
+			m.reply "#{m.user.nick}: Dealer bust\u000F | Your hand: %s(%s). Dealer's hand: %s(%s)." % [ show_hand(@hand[m.user.nick]['player']), hand_count(@hand[m.user.nick]['player']), show_hand(@hand[m.user.nick]['dealer']), hand_count(@hand[m.user.nick]['dealer']) ]
+			$DataBase['users'].find{ |h| h['nick'] == m.user.nick.downcase }['botcoins'] += (@hand[m.user.nick]["bet"] * 2)
 
 		# Tie
 		elsif dealer_hand == player_hand
