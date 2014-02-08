@@ -21,7 +21,7 @@
 ***
 
 ### Google
-Gets the first result from Google for *search query*
+Gets the first result from [Google](https://encrypted.google.com/) for *search query*
 
 **-g/-google** *search query*
 
@@ -32,7 +32,7 @@ Gets the first result from Google for *search query*
 
 
 ### WolframAlpha
-Finds the answer of *question* using WolfarmAlpha
+Finds the answer of *question* using [WolfarmAlpha](http://www.wolframalpha.com/)
 
 **-wa** *question*
 
@@ -41,7 +41,7 @@ Finds the answer of *question* using WolfarmAlpha
 
 
 ### Youtube
-Gets the first result from Youtube for *search query* 
+Gets the first result from [Youtube](https://www.youtube.com) for *search query* 
 
 **-yt/-youtube** *search query*
 
@@ -108,7 +108,7 @@ Returns the currently playing/last scrobbled track for *user* and top artist tag
 	
 
 ### Weather
-Yahoo Weather for *location*
+[Yahoo Weather](http://weather.yahoo.com/) for *location*
 
 **-w/-we/-weather** *location*
 
@@ -160,7 +160,7 @@ Gets the latest tweet for *username*
 
 
 ### Urban Dictionary
-Gets the first definition of *query* at UrbanDictionary.com
+Gets the first definition of *query* at [UrbanDictionary](http://www.urbandictionary.com/)
 
 **-u/-ur/-urban** *query*
 
@@ -177,7 +177,7 @@ Gets the *n*th definition for *query* (only works for definitions 1-7)
 	
 
 ### TVRage
-Looks up *show* info on TVRage
+Looks up *show* info on [TVRage](http://www.tvrage.com/)
 
 **-tv** *show*
 
@@ -277,21 +277,21 @@ Makes a bet of *n* botcoins
 **-blackjack** *n*
 
 	-blackjack 10
-	Your hand: ["10♣", "J♥"] (20). Dealer's hand: Q♠.
+	Your hand: 10♣ J♥ (20). Dealer's hand: Q♠.
 	
 Deals another card
 
 **-hit**
 
 	-hit
-	Your hand: ["10♣", "J♥", "A♠"] (21). Dealer's hand: Q♠.
+	Your hand: 10♣ J♥ A♠ (21). Dealer's hand: Q♠.
 
 Stays
 
 **-stay**
 
 	-stay
-	DEALER BUST! Your hand: ["10♣", "J♥", "A♠"] (21). Dealer's hand: [ "Q♠", "5♠", "8♦"] (23).
+	DEALER BUST! Your hand: 10♣ J♥ A♠ (21). Dealer's hand: Q♠ 5♠ 8♦ (23).
 
 Give up and get back half your bet
 
@@ -460,3 +460,4 @@ Removes a user's location from the database
 
 	Porygon: remove location Cbbleh
 	<Porygon> Done
+
