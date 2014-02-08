@@ -108,12 +108,12 @@ Returns the currently playing/last scrobbled track for *user* and top artist tag
 	
 
 ### Weather
-[Yahoo Weather](http://weather.yahoo.com/) for *location*
+[Yahoo Weather](http://weather.yahoo.com/) for *location* formatted as now/today/tomorrow
 
 **-w/-we/-weather** *location*
 
 	-weather Washington, DC
-	Weather | Washington, DC | Mostly Cloudy 44°F. Humidity: 49%. Wind: 12 km/h | Mon: Partly Cloudy 49°F/33°F | Tue: Partly Cloudy 49°F/40°F
+	Weather | Washington, DC | Cloudy 31℉. Humidity: 35%. Wind: 6 mph | Sat: Few Snow Showers 35℉/30℉ | Sun: PM Showers 42℉/31℉
 	
 Associates your current irc nick with *location*.
 Other weather functions will default to this location if none is provided.
