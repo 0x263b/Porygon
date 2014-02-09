@@ -11,16 +11,17 @@ class UrbanDictionary
 		begin
 			number ||= 1
 
-			url = "http://www.urbandictionary.com/define.php?term=#{CGI.escape(word)}"
-			urban = Nokogiri::HTML(open(url))
-			define = urban.search("//div[@class='meaning']")[number.to_i-1].text.gsub(/\s+/, ' ')
+			url = open("http://api.urbandictionary.com/v0/define?term=#{CGI.escape(word)}").read
+			hashed = JSON.parse(url)
 
-			if define.length > 250
-				more = shorten_url("http://www.urbandictionary.com/define.php?term=#{CGI.escape(word)}")
-				define = "#{define[0..250]}... Read more: #{more}"
+			define = hashed["list"][number.to_i-1]["definition"].gsub(/\s+/, ' ')
+			more = shorten_url(hashed["list"][number.to_i-1]["permalink"])
+
+			if define.length > 200
+				define = "#{define[0..200]}..."
 			end
 
-			m.reply "UrbanDictionary 06|\u000F #{word} 06|\u000F #{define}"
+			m.reply "UrbanDictionary 06|\u000F #{word} 06|\u000F #{more} 06|\u000F #{define}"
 		rescue
 			m.reply "UrbanDictionary 06|\u000F #{word} 06|\u000F Could not find definition"
 		end
