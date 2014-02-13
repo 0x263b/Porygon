@@ -14,9 +14,11 @@
 
 Clone this repo and `bundle install` the dependencies. Edit [porygon.rb](https://github.com/killwhitey/Porygon/blob/master/porygon.rb#L24-L55) to include your account settings, API keys, and [server address](https://github.com/killwhitey/Porygon/blob/master/porygon.rb#L158).
 
-Once you have the bot connected, it's time to add it to some channels. In a pm say something along the lines of
+To start the bot do `ruby daemon.rb start`
+
+Once connected, it's time to add it to some channels. In a pm say something along the lines of
 
 	<you> Bot: add admin you
 	<you> Bot: join #myChannel
 	
-Now the bot listens to `you` for restricted commands and will auto-join `#myChannel`.
+Now the bot, `Bot`, listens to `you` for restricted commands and will auto-join `#myChannel`.
