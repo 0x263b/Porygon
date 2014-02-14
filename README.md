@@ -20,5 +20,5 @@ Once connected, it's time to add it to some channels. In a pm say something alon
 
 	<you> Bot: add admin you
 	<you> Bot: join #myChannel
-	
+
 Now the bot, `Bot`, listens to `you` for restricted commands and will auto-join `#myChannel`.
