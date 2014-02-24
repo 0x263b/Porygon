@@ -1,5 +1,7 @@
 # Porygon
----
+
+#### These examples assume `-` is the command prefix. Some other bots use `:` or `!`.
+
 ### Functions
 * [Google](#google)
 * [WolframAlpha](#wolframalpha)
