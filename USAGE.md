@@ -305,7 +305,7 @@ Give up and get back half your bet
 
 
 ### Quotes
-Adds a quote to the [Rzion Quote Database](https://rizon-qdb.herokuapp.com/)
+Adds a quote to the [Rizon Quote Database](https://rizon-qdb.herokuapp.com/)
 
 **-quote** *some quote*
 
