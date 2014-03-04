@@ -17,6 +17,7 @@
 * [Horoscope](#horoscope)
 * [Botcoins](#botcoins)
 * [Blackjack](#blackjack)
+* [Quotes](#quotes)
 * [URL Parser](#url-parser)
 * [Admin functions](#admin-functions)
 
@@ -302,6 +303,15 @@ Give up and get back half your bet
 	-surrender
 	Better luck next time!
 
+
+### Quotes
+Adds a quote to the [Rzion Quote Database](https://rizon-qdb.herokuapp.com/)
+
+**-quote** *some quote*
+
+	-quote <Cbbleh> im gay
+	Quote added to database
+	
 
 ### URL Parser
 Returns the title of a page and the host for html URLs.

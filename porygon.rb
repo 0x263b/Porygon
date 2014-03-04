@@ -150,6 +150,7 @@ require_relative'./plugins/youtube/youtube.rb'                   # Youtube
 require_relative'./plugins/botcoins/botcoins.rb'                 # BotCoins
 require_relative'./plugins/botcoins/blackjack.rb'                # BlackJack
 require_relative'./plugins/horoscopes/horoscope.rb'              # Horoscope
+require_relative'./plugins/quote/quotes.rb'                      # Quotes
 
 
 bot = Cinch::Bot.new do
@@ -182,7 +183,8 @@ bot = Cinch::Bot.new do
 			Tvrage,
 			BotCoins,
 			BlackJack,
-			Horoscope
+			Horoscope,
+			Quotes
 		]
 	end
 end
