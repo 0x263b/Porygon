@@ -200,12 +200,12 @@ class Uri
 		doc = @agent.get(link)
 		bang = URI::split(link)
 
-		if bang[5].include? "/res/"
+		if bang[5].include? "/thread/"
 
 			if bang[8] != nil
 				postnumber = bang[8].gsub('p', '')
 			else
-				postnumber = bang[5].gsub(/\/(.*)\/res\//, '')
+				postnumber = bang[5].gsub(/.+\/thread\/(\d+)/, '\1')
 			end
 
 			subject   = doc.search("//div[@id='pi#{postnumber}']//span[@class='subject']").text
