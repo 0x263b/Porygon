@@ -134,7 +134,7 @@ require_relative'./plugins/internal/admin.rb'    # Admin
 require_relative'./plugins/internal/userset.rb'  # UserSet
 
 
-# Advacned plugins
+# Advanced plugins
 require_relative'./plugins/8ball/8ball.rb'                       # Eightball
 require_relative'./plugins/google/google.rb'                     # Google
 require_relative'./plugins/lastfm/lastfm.rb'                     # Lastfm
