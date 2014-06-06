@@ -123,9 +123,9 @@ def shorten_url(long)
 	url = URI.parse('http://mnn.im/s')
 	http = Net::HTTP.new(url.host, url.port)
 	response, body = http.post(url.path, long)
-	return response['location']
+	parsed = JSON.parse(response.body)
+	return parsed["url"]["short_url"]
 end
-
 
 
 # Internal

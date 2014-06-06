@@ -103,11 +103,10 @@ class Admin
 			rows = $DataBase['users'].find_all{ |h| h['ignored'] == true }
 			rows = JSON.pretty_generate rows
 
-			url = URI.parse('http://mnn.im/c')
-			http = Net::HTTP.new(url.host, url.port)
-			response, body = http.post(url.path, rows)
+			paste_data = Net::HTTP.post_form(URI.parse('http://mnn.im/c'), {'paste' => rows})
+			parsed = JSON.parse(paste_data.body)
 
-			m.reply response['location'], true
+			m.reply parsed["paste"]["link"], true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
@@ -167,11 +166,10 @@ class Admin
 			rows = $DataBase['users'].find_all{ |h| h['admin'] == true }
 			rows = JSON.pretty_generate rows
 
-			url = URI.parse('http://mnn.im/c')
-			http = Net::HTTP.new(url.host, url.port)
-			response, body = http.post(url.path, rows)
+			paste_data = Net::HTTP.post_form(URI.parse('http://mnn.im/c'), {'paste' => rows})
+			parsed = JSON.parse(paste_data.body)
 
-			m.reply response['location'], true
+			m.reply parsed["paste"]["link"], true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
@@ -313,11 +311,10 @@ class Admin
 		begin
 			rows = JSON.pretty_generate($DataBase['channels'])
 
-			url = URI.parse('http://mnn.im/c')
-			http = Net::HTTP.new(url.host, url.port)
-			response, body = http.post(url.path, rows)
+			paste_data = Net::HTTP.post_form(URI.parse('http://mnn.im/c'), {'paste' => rows})
+			parsed = JSON.parse(paste_data.body)
 
-			m.reply response['location'], true
+			m.reply parsed["paste"]["link"], true
 		rescue
 			m.reply "Oops something went wrong", true
 			raise
