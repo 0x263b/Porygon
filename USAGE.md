@@ -3,6 +3,7 @@
 #### These examples assume `-` is the command prefix. Some other bots use `:` or `!`.
 
 ### Functions
+
 * [Google](#google)
 * [WolframAlpha](#wolframalpha)
 * [Youtube](#youtube)
@@ -191,7 +192,7 @@ Looks up *show* info on [TVRage](http://www.tvrage.com/)
 ### Random
 Randomly picks an option from an array separated by |
 
-**-r/-rand** *one | two | three*
+**-r/-rand** `one | two | three`
 
 	-r do work | don't do work
 	don't do work
@@ -324,7 +325,8 @@ Returns the type, size, and (sometimes) filename of a file URL.
 	File "omg.png" image/png; charset=binary 126.9 KB (ompldr.org)
 
 
----
+***
+
 ### Admin functions
 These functions use the bot's nick as their prefix. The examples assume the nick is *Porygon*
 
