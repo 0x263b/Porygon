@@ -19,7 +19,7 @@ class Google
 
 			for img in hashed["responseData"]["results"][0..1]
 				title = img["title"].gsub(/<b>/, '').gsub(/<\/b>/, "\u000F")
-				m.reply CGI.unescape_html("Google 02|\u000F #{title} 02|\u000F #{img["url"]}\u000F")
+				m.reply CGI.unescape_html("Google 02|\u000F #{title} 02|\u000F #{CGI.unescape(img["url"])}\u000F")
 			end 
 		rescue
 			nil
