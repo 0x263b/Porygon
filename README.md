@@ -10,6 +10,7 @@
 * [Yahoo GeoPlanet](http://developer.yahoo.com/geo/geoplanet/)
 
 ---
+
 ### Installation
 
 Clone this repo and `bundle install` the dependencies. Edit [porygon.rb](https://github.com/killwhitey/Porygon/blob/master/porygon.rb#L24-L55) to include your account settings, API keys, and [server address](https://github.com/killwhitey/Porygon/blob/master/porygon.rb#L158).

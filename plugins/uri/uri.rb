@@ -157,6 +157,9 @@ class Uri
 			when "boards.4chan.org"
 				link_4chan(m, link, uri)
 
+			when "8chan.co"
+				link_redditchan(m, link, uri)
+
 			when "twitter.com"
 				link_twitter(m, link, uri)
 
@@ -236,6 +239,59 @@ class Uri
 	end
 
 
+	def link_redditchan(m, link, uri)
+
+		doc = @agent.get(link)
+		bang = URI::split(link)
+
+		if bang[5].include? "/res/"
+
+			if bang[8] != nil
+				postnumber = bang[8]
+
+				subject   = doc.search("//div[@id='reply_#{postnumber}']/p[@class='intro']//span[@class='subject']").text
+				poster    = doc.search("//div[@id='reply_#{postnumber}']/p[@class='intro']//span[@class='name']").text
+				trip      = doc.search("//div[@id='reply_#{postnumber}']/p[@class='intro']//span[@class='trip']").text
+				capcode   = doc.search("//div[@id='reply_#{postnumber}']/p[@class='intro']//span[@class='capcode']").text
+				flag      = doc.search("//div[@id='reply_#{postnumber}']/p[@class='intro']//img[contains(concat(' ',normalize-space(@class),' '),' flag ')]/@title").text
+
+				reply     = doc.search("//div[@id='reply_#{postnumber}']/div[@class='body']").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "03").gsub("<s>", "01,01").gsub(/<\/s\w*>/, "\u000F")
+				reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
+				image     = doc.search("//div[@id='reply_#{postnumber}']/div[@class='files']/div[@class='file']/p[@class='fileinfo']/a[1]/@href").text
+				date      = doc.search("//div[@id='reply_#{postnumber}']/p[@class='intro']//time/@datetime").text
+			else
+				postnumber = bang[5].scan(/res\/(\d+)/).first.last
+
+				
+				subject   = doc.search("//div[@class='post op']/p[@class='intro']//span[@class='subject']").text
+				poster    = doc.search("//div[@class='post op']/p[@class='intro']//span[@class='name']").text
+				trip      = doc.search("//div[@class='post op']/p[@class='intro']//span[@class='trip']").text
+				capcode   = doc.search("//div[@class='post op']/p[@class='intro']//span[@class='capcode']").text
+				flag      = doc.search("//div[@class='post op']/p[@class='intro']//img[contains(concat(' ',normalize-space(@class),' '),' flag ')]/@title").text
+				date      = doc.search("//div[@class='post op']/p[@class='intro']//time/@datetime").text
+
+				reply     = doc.search("//div[@class='post op']/div[@class='body']").inner_html.gsub("<br>", " ").gsub("<span class=\"quote\">", "03").gsub("<s>", "01,01").gsub(/<\/s\w*>/, "\u000F")
+				reply     = reply.gsub(/<\/?[^>]*>/, "").gsub("&gt;", ">")
+				image     = doc.search("//div[@id='thread_#{postnumber}']/div[@class='files']/div[@class='file']/p[@class='fileinfo']/a[1]/@href").text
+			end
+
+			date = Time.parse(date)
+			date = minutes_in_words(date)
+
+			subject = subject+" " if subject != ""
+			reply = " 03|\u000F "+reply if reply != ""
+			reply = reply[0..160]+" ..." if reply.length > 160
+			image = " 03|\u000F File: https://8chan.co"+image if image.length > 1
+			flag = flag+" " if flag.length > 1
+			capcode = " "+capcode if capcode.length > 1
+
+			"Redditchan 03|\u000F %s03%s%s%s\u000F %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
+
+		else # Board Index Title
+			link_generic(m, link)
+		end
+	end
+	
 
 	def link_twitter(m, link, uri)
 		bang = link.split("/")
