@@ -201,7 +201,7 @@ class Uri
 	def link_4chan(m, link, uri)
 
 		doc = @agent.get(link)
-		bang = URI::split(link)
+		bang = URI::split(link.gsub('#reply', ''))
 
 		if bang[5].include? "/thread/"
 
