@@ -158,7 +158,7 @@ class Uri
 				link_4chan(m, link, uri)
 
 			when "8chan.co"
-				link_redditchan(m, link, uri)
+				link_8chan(m, link, uri)
 
 			when "twitter.com"
 				link_twitter(m, link, uri)
@@ -239,7 +239,7 @@ class Uri
 	end
 
 
-	def link_redditchan(m, link, uri)
+	def link_8chan(m, link, uri)
 
 		doc = @agent.get(link)
 		bang = URI::split(link)
@@ -281,11 +281,11 @@ class Uri
 			subject = subject+" " if subject != ""
 			reply = " 03|\u000F "+reply if reply != ""
 			reply = reply[0..160]+" ..." if reply.length > 160
-			image = " 03|\u000F File: https://8chan.co"+image if image.length > 1
+			image = " 03|\u000F File: "+image if image.length > 1
 			flag = flag+" " if flag.length > 1
 			capcode = " "+capcode if capcode.length > 1
 
-			"Redditchan 03|\u000F %s03%s%s%s\u000F %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
+			"\u221Echan 03|\u000F %s03%s%s%s\u000F %s(%s) No.%s%s%s" % [subject, poster, trip, capcode, flag, date, postnumber, image, reply]
 
 		else # Board Index Title
 			link_generic(m, link)
