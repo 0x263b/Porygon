@@ -356,9 +356,13 @@ class Uri
 
 
 	def link_generic(m, link)
-		puts "generic link"
-		page = @agent.get(link)
-		title = page.title.gsub(/\s+/, ' ').strip
+		page  = @agent.get(link)
+		
+		if page.at('meta[property="og:title"]')
+			title = page.search('meta[property="og:title"]')[0]["content"]
+		else 
+			title = page.title.gsub(/\s+/, ' ').strip
+		end
 
 		uri = URI.parse(page.uri.to_s)
 		"Title 03|\u000F %s 03|\u000F %s" % [title[0..140], uri.host]
