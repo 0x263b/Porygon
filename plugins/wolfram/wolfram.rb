@@ -27,12 +27,23 @@ class Wolfram
 				input  = input[0..140]+"..."  if input.length > 140
 				output = output[0..140]+"..." if output.length > 140
 
+				replaces = /\\:(\w{4})/.match(output)
+
+				if replaces != nil
+					replaces.captures.each do |uni|
+						foo = [uni.hex].pack("U")
+
+						output.gsub!("\\\:", '')
+						output.gsub!(uni, foo)
+					end
+				end
+
 				if output.length < 1 and input.length > 1
 					reply = input + " => Can not render answer. Check link"
 				elsif output.length < 1 and input.length < 1
 					reply = "Fucked if I know"
 				else
-					reply = input + " => " + output
+					reply = "#{input} => #{output}"
 				end
 
 			else
