@@ -267,6 +267,8 @@ class Lastfm
 	end
 
 
+	# Events for Artist
+
 	match /events (.+)/i, method: :artist_events
 	def artist_events(m, query, n=3)
 		return if ignore_nick(m.user.nick)
@@ -274,7 +276,7 @@ class Lastfm
 		begin
 			artistevents = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.getevents&artist=#{CGI.escape(query)}&api_key="+$LASTFMAPI))
 
-			events        = artistevents.xpath("//event")[0..n]
+			events       = artistevents.xpath("//event")[0..n]
 			locationlist = ""
 			events.each do |getinfo|
 				city = getinfo.xpath("venue/location/city").text
@@ -284,10 +286,54 @@ class Lastfm
 			end
 			locationlist = locationlist[0..locationlist.length-3]
 			locationlist = "No upcoming events on file" if locationlist.length < 1
-
-			reply = "%s" % [locationlist]
 		end
-		m.reply "Upcoming events for #{query} 04|\u000F #{reply}"
+
+		m.reply "Last.fm 04|\u000F Upcoming events for #{query} 04|\u000F #{locationlist}"
 	end
 
+
+	# What everyone in the channel is playing
+
+	match /wp/i, method: :whos_playing
+	def whos_playing(m)
+		return if ignore_nick(m.user.nick)
+
+		begin
+			m.reply "Last.fm 04|\u000F Who's playing?"
+
+			m.channel.users.each do |user, modes|
+				if $DataBase['users'].find{ |h| h['nick'] == user.nick.downcase }
+					username = $DataBase['users'].find{ |h| h['nick'] == user.nick.downcase }['lastfm']
+				end
+				next if username.nil?
+
+				url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=#{username}&limit=1&api_key="+$LASTFMAPI
+				response = open(url) rescue nil
+				next unless response
+					
+				result = Nokogiri::XML(response)
+				next if result.xpath("//lfm/@status").text != "ok"
+
+				artist  = result.xpath("//recenttracks/track[1]/artist").text
+				track   = result.xpath("//recenttracks/track[1]/name").text
+				now     = result.xpath("//recenttracks/track[1]/@nowplaying").text
+
+				if now == "true"
+					tagurl = Nokogiri::XML(open("http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=#{CGI.escape(artist)}&api_key="+$LASTFMAPI, :read_timeout=>3).read)
+					tags = tagurl.xpath("//toptags/tag")[0..3]
+					taglist = ""
+					tags.each do |gettags|
+						tag = gettags.xpath("name").text
+						taglist = taglist + "#{tag}, "
+					end
+					taglist = taglist[0..taglist.length-3]
+					taglist = "#{taglist}" if taglist != ""
+
+					reply = "\"#{track}\" by #{artist} 04|\u000F #{taglist}"
+
+					m.reply "#{user}\u000F.#{username} 04|\u000F #{reply}"
+				end
+			end
+		end
+	end
 end
