@@ -118,7 +118,7 @@ class BotCoins
 
 	match /give (\S+) (\d+)/i, method: :give, :react_on => :channel
 	def give(m, nick, amount)
-		return if ignore_nick(m.user.nick) or (nick == m.user.nick)
+		return if ignore_nick(m.user.nick) or (nick == m.user.nick) or (nick == bot.nick)
 
 		amount = amount.to_i
 		m.user.refresh unless m.user.authed?
