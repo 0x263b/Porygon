@@ -157,7 +157,7 @@ class Uri
 			when "boards.4chan.org"
 				link_4chan(m, link, uri)
 
-			when "8chan.co"
+			when "8ch.net"
 				link_8chan(m, link, uri)
 
 			when "twitter.com"
