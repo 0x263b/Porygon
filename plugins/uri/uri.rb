@@ -357,7 +357,7 @@ class Uri
 		page  = @agent.get(link)
 		
 		if page.at('meta[property="og:title"]') and page.search('meta[property="og:title"]')[0]["content"].length > 0
-			title = page.search('meta[property="og:title"]')[0]["content"]
+			title = page.search('meta[property="og:title"]')[0]["content"].gsub(/\s+/, ' ').strip
 		else 
 			title = page.title.gsub(/\s+/, ' ').strip
 		end
