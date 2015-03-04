@@ -127,10 +127,13 @@ class Lastfm
 
 	# Compare two users
 
-	match /compare (\S+)$/i, method: :compare
-	match /compare (\S+) (\S+)/i, method: :compare
+	match /compare (\S+)(?: (\S+))?/i, method: :compare
 	def compare(m, one, two = nil)
 		return if ignore_nick(m.user.nick)
+
+		if two == nil
+			two = m.user.nick
+		end
 
 		userone = get_lastfm(m, one)
 		return if userone.nil?
