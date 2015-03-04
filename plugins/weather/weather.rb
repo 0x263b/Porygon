@@ -46,11 +46,11 @@ class Weather
 			# Since amerifats still live in the 1800s we have to give them Fahrenheit
 			if country == "US"
 				unit   = "f"
-				units  = "\u2109"
+				units  = "\u00B0F"
 				wunits = "mph"
 			else
 				unit   = "c"
-				units  = "\u2103"
+				units  = "\u00B0C"
 				wunits = "km/h"
 			end
 
