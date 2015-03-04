@@ -13,35 +13,35 @@ class Twitter
 		case minutes
 		when 0..1      then "just now"
 		when 2..59     then "#{minutes.to_s} minutes ago"
-		when 60..1439
+		when 60..1439        
 			words = (minutes/60)
 			if words > 1
 				"#{words.to_s} hours ago"
 			else
 				"an hour ago"
 			end
-		when 1440..11519
+		when 1440..11519     
 			words = (minutes/1440)
 			if words > 1
 				"#{words.to_s} days ago"
 			else
 				"yesterday"
 			end
-		when 11520..43199
+		when 11520..43199    
 			words = (minutes/11520)
 			if words > 1
 				"#{words.to_s} weeks ago"
 			else
 				"last week"
 			end
-		when 43200..525599
+		when 43200..525599   
 			words = (minutes/43200)
 			if words > 1
 				"#{words.to_s} months ago"
 			else
 				"last month"
 			end
-		else
+		else                      
 			words = (minutes/525600)
 			if words > 1
 				"#{words.to_s} years ago"
@@ -59,7 +59,6 @@ class Twitter
 		return access_token
 	end
 
-
 	def execute(m, query)
 		return if ignore_nick(m.user.nick)
 
@@ -69,17 +68,30 @@ class Twitter
 			response = access_token.request(:get, "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{query}&count=1&exclude_replies=true")
 			parsed_response = JSON.parse(response.body)
 
-			tweettext   = parsed_response[0]["text"].gsub(/\s+/, ' ')
 			posted      = parsed_response[0]["created_at"]
 			name        = parsed_response[0]["user"]["name"]
 			screenname  = parsed_response[0]["user"]["screen_name"]
 
-			urls = parsed_response[0]["entities"]["urls"]
+			if parsed_response[0].has_key?("retweeted_status")
+				tweettext = parsed_response[0]["retweeted_status"]["text"].gsub(/\s+/, ' ')
+				urls      = parsed_response[0]["retweeted_status"]["entities"]["urls"]
+			else
+				tweettext = parsed_response[0]["text"].gsub(/\s+/, ' ')
+				urls      = parsed_response[0]["entities"]["urls"]
+			end
 
 			urls.each do |rep|
 				short = rep["url"]
 				long  = rep["expanded_url"]
 				tweettext = tweettext.gsub(short, long)
+			end
+
+			if parsed_response[0]["entities"].has_key?("media")
+				image_url = parsed_response[0]["entities"]["media"][0]["media_url_https"]
+				image_url = shorten_url(image_url + ":orig")
+				image_tco = parsed_response[0]["entities"]["media"][0]["url"]
+
+				tweettext = tweettext.gsub(image_tco, image_url)
 			end
 
 			time        = Time.parse(posted)
