@@ -313,6 +313,15 @@ class Uri
 					tweettext = tweettext.gsub(short, long)
 				end
 
+				if parsed_response["entities"].has_key?("media")
+					image_url = parsed_response["entities"]["media"][0]["media_url_https"]
+					image_url = shorten_url(CGI.unescape_html(image_url) + ":orig")
+
+					image_tco = parsed_response["entities"]["media"][0]["url"]
+
+					tweettext = tweettext.gsub(image_tco, image_url)
+				end
+
 				time        = Time.parse(posted)
 				time        = minutes_in_words(time)
 
@@ -358,7 +367,9 @@ class Uri
 		
 		if page.at('meta[property="og:title"]') and page.search('meta[property="og:title"]')[0]["content"].length > 0
 			title = page.search('meta[property="og:title"]')[0]["content"].gsub(/\s+/, ' ').strip
-		else 
+		elsif page.at('meta[property="title"]') and page.search('meta[property="title"]')[0]["content"].length > 0
+			title = page.search('meta[property="title"]')[0]["content"].gsub(/\s+/, ' ').strip
+		else
 			title = page.title.gsub(/\s+/, ' ').strip
 		end
 
@@ -366,4 +377,5 @@ class Uri
 		"Title 03|\u000F %s 03|\u000F %s" % [title[0..140], uri.host]
 	end
 
+#Class dismissed
 end
