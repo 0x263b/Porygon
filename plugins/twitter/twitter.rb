@@ -86,7 +86,7 @@ class Twitter
 				tweettext = tweettext.gsub(short, long)
 			end
 
-			if parsed_response[0]["extended_entities"].has_key?("media")
+			if parsed_response[0]["entities"].has_key?("media")
 				media = parsed_response[0]["extended_entities"]["media"][0]
 
 				if (media["type"] == "animated_gif" or media["type"] == "video")
