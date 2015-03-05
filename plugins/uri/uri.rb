@@ -313,12 +313,18 @@ class Uri
 					tweettext = tweettext.gsub(short, long)
 				end
 
-				if parsed_response["entities"].has_key?("media")
-					image_url = parsed_response["entities"]["media"][0]["media_url_https"]
-					image_url = shorten_url(CGI.unescape_html(image_url) + ":orig")
+				if parsed_response["extended_entities"].has_key?("media")
+					media = parsed_response["extended_entities"]["media"][0]
 
-					image_tco = parsed_response["entities"]["media"][0]["url"]
+					if (media["type"] == "animated_gif" or media["type"] == "video")
+						image_url = media["video_info"]["variants"][0]["url"]
+						image_url = shorten_url(image_url)
+					else
+						image_url = media["media_url_https"]
+						image_url = shorten_url(image_url + ":orig")
+					end
 
+					image_tco = media["url"]
 					tweettext = tweettext.gsub(image_tco, image_url)
 				end
 

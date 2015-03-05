@@ -86,11 +86,18 @@ class Twitter
 				tweettext = tweettext.gsub(short, long)
 			end
 
-			if parsed_response[0]["entities"].has_key?("media")
-				image_url = parsed_response[0]["entities"]["media"][0]["media_url_https"]
-				image_url = shorten_url(image_url + ":orig")
-				image_tco = parsed_response[0]["entities"]["media"][0]["url"]
+			if parsed_response[0]["extended_entities"].has_key?("media")
+				media = parsed_response[0]["extended_entities"]["media"][0]
 
+				if (media["type"] == "animated_gif" or media["type"] == "video")
+					image_url = media["video_info"]["variants"][0]["url"]
+					image_url = shorten_url(image_url)
+				else
+					image_url = media["media_url_https"]
+					image_url = shorten_url(image_url + ":orig")
+				end
+
+				image_tco = media["url"]
 				tweettext = tweettext.gsub(image_tco, image_url)
 			end
 
