@@ -33,6 +33,8 @@ class TweetFeed
 			name        = parsed_response[0]["user"]["name"]
 			screenname  = parsed_response[0]["user"]["screen_name"]
 
+			return if @last_sent_id == status_id
+
 			if parsed_response[0].has_key?("retweeted_status")
 				tweettext = parsed_response[0]["retweeted_status"]["text"].gsub(/\s+/, ' ')
 				urls      = parsed_response[0]["retweeted_status"]["entities"]["urls"]
