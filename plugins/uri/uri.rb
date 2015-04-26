@@ -53,8 +53,8 @@ class Uri
 		end
 	end
 
-	def length_in_minutes(seconds)
-		return nil if seconds < 0
+	def length_in_minutes(seconds=0)
+		seconds = Duration.new(seconds).to_i
 
 		if seconds > 3599
 			length = [seconds/3600, seconds/60 % 60, seconds % 60].map{|t| t.to_s.rjust(2,'0')}.join(':')
@@ -63,6 +63,8 @@ class Uri
 		else
 			length = "00:#{seconds.to_s.rjust(2,'0')}"
 		end
+
+		return length
 	end
 
 	def add_commas(digits)
@@ -347,20 +349,24 @@ class Uri
 	def link_youtube(m, link, uri)
 		begin
 			regex    = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?(?:feature=player_detailpage)?(?:feature=player_embedded)?&?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
-			hashed   = JSON.parse(open("http://gdata.youtube.com/feeds/api/videos/#{link.match(regex)[1]}?v=2&alt=jsonc").read)
 
-			name     = hashed["data"]["title"]
-			views    = hashed["data"]["viewCount"] || 0
-			likes    = hashed["data"]["likeCount"] || 0
-			votes    = hashed["data"]["ratingCount"] || 0
-			length   = hashed["data"]["duration"]
+			id       = link.match(regex)[1]
+			url      = open("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=#{id}&key=#{$YOUTUBE_API}").read
+			hashed   = JSON.parse(url)
 
-			length   = length_in_minutes(length.to_i)
-			views    = add_commas(views.to_s) 
+			name     = hashed["items"][0]["snippet"]["title"]
+			views    = hashed["items"][0]["statistics"]["viewCount"] || 0
+			likes    = hashed["items"][0]["statistics"]["likeCount"] || 0
+			dislikes = hashed["items"][0]["statistics"]["dislikeCount"] || 0
+			length   = hashed["items"][0]["contentDetails"]["duration"] || "PT1M1S"
 
+			views    = add_commas(views) 
+			votes    = likes.to_i + dislikes.to_i
 			rating   = (votes > 0 ? (((likes.to_i+0.0)/votes.to_i)*100) : 0.0)
+			rating   = rating.round.to_s + "%"
+			length   = length_in_minutes(length)
 
-			"YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s%" % [name[0..140], length, views, rating.round]
+			"YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s" % [name[0..140], length, views, rating]
 		rescue
 			link_generic(m, link)
 		end

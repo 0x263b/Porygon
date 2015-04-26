@@ -6,8 +6,8 @@ class Youtube
 	match /y(?:outube)? (.+)/i
 	match /yt (.+)/i
 
-	def length_in_minutes(seconds)
-		return nil if seconds < 0
+	def length_in_minutes(seconds=0)
+		seconds = Duration.new(seconds).to_i
 
 		if seconds > 3599
 			length = [seconds/3600, seconds/60 % 60, seconds % 60].map{|t| t.to_s.rjust(2,'0')}.join(':')
@@ -16,6 +16,8 @@ class Youtube
 		else
 			length = "00:#{seconds.to_s.rjust(2,'0')}"
 		end
+
+		return length
 	end
 
 	def add_commas(digits)
@@ -27,26 +29,27 @@ class Youtube
 
 		begin
 			query = CGI.escape(query)
-
-			url = open("http://gdata.youtube.com/feeds/api/videos?q=#{query}&max-results=1&v=2&prettyprint=flase&alt=json").read
+			url = open("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=#{query}&key=#{$YOUTUBE_API}").read
 			hashed = JSON.parse(url)
 
 			page_url = shorten_url("https://www.youtube.com/results?search_query=#{query}")
 
-			name     = hashed["feed"]["entry"][0]["media$group"]["media$title"]["$t"]
-			id       = hashed["feed"]["entry"][0]["media$group"]["yt$videoid"]["$t"]
-			views    = hashed["feed"]["entry"][0]["yt$statistics"]["viewCount"]
-			likes    = hashed["feed"]["entry"][0]["yt$rating"] && hashed["feed"]["entry"][0]["yt$rating"]["numLikes"]
-			dislikes = hashed["feed"]["entry"][0]["yt$rating"] && hashed["feed"]["entry"][0]["yt$rating"]["numDislikes"]
-			length   = hashed["feed"]["entry"][0]["media$group"]["yt$duration"]["seconds"]
+			name     = hashed["items"][0]["snippet"]["title"]
+			id       = hashed["items"][0]["id"]["videoId"]
 
-			embed    = hashed["feed"]["entry"][0]["yt$accessControl"].find{|i| i["action"] == "embed"}
+			url = open("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=#{id}&key=#{$YOUTUBE_API}").read
+			hashed = JSON.parse(url)
+
+			views    = hashed["items"][0]["statistics"]["viewCount"] || 0
+			likes    = hashed["items"][0]["statistics"]["likeCount"] || 0
+			dislikes = hashed["items"][0]["statistics"]["dislikeCount"] || 0
+			length   = hashed["items"][0]["contentDetails"]["duration"] || "PT1M1S"
 
 			views    = add_commas(views) 
 			votes    = likes.to_i + dislikes.to_i
-			rating   = ((likes.to_i+0.0)/votes)*100
+			rating   = (votes > 0 ? (((likes.to_i+0.0)/votes.to_i)*100) : 0.0)
 			rating   = rating.round.to_s + "%"
-			length   = length_in_minutes(length.to_i)
+			length   = length_in_minutes(length)
 
 			m.reply "YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s 05|\u000F http://youtu.be/%s\u000F 05|\u000F More results: %s\u000F" % 
 			[name, length, views, rating, id, page_url]

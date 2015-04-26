@@ -8,6 +8,7 @@
 * [Wolfram Alpha](http://products.wolframalpha.com/api/)
 * [Twitter](https://dev.twitter.com/apps)
 * [Yahoo GeoPlanet](http://developer.yahoo.com/geo/geoplanet/)
+* [Youtube](https://developers.google.com/youtube/v3/docs/search/list)
 
 ---
 

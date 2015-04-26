@@ -18,6 +18,7 @@ require 'oauth'
 require 'date'
 require 'time'
 require 'cgi'
+require "ruby-duration"
 
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
@@ -54,6 +55,9 @@ $TWITTER_ACCESS_TOKEN_SECRET = ""
 # http://developer.yahoo.com/geo/geoplanet/
 $YAHOO_GEO = ""
 
+# Youtube API
+# https://developers.google.com/youtube/v3/docs/search/list
+$YOUTUBE_API = ""
 
 
 $DBFILE = "database.json"
