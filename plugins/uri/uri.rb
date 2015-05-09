@@ -165,8 +165,11 @@ class Uri
 			when "twitter.com"
 				link_twitter(m, link, uri)
 
-			when "www.youtube.com", "youtu.be"
-				link_youtube(m, link, uri)	
+			when "www.youtube.com"
+				link_youtube(m, link, false)
+
+			when "youtu.be"
+				link_youtube(m, link, true)
 
 			else # Generic Title
 				link_generic(m, link)
@@ -346,11 +349,15 @@ class Uri
 
 
 
-	def link_youtube(m, link, uri)
+	def link_youtube(m, link, short)
 		begin
-			regex    = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?(?:feature=player_detailpage)?(?:feature=player_embedded)?&?v=|\.be\/)([\w\-]+)(&(amp;)?[\w\?=‌​]*)?/i
-
-			id       = link.match(regex)[1]
+			if short == true
+				id = URI.parse(link).path.gsub("/", "")
+			else 
+				foo = CGI.parse(URI.parse(link).query)
+				id = foo["v"][0]
+			end
+			
 			url      = open("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=#{id}&key=#{$YOUTUBE_API}").read
 			hashed   = JSON.parse(url)
 

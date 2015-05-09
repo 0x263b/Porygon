@@ -51,7 +51,7 @@ class Youtube
 			rating   = rating.round.to_s + "%"
 			length   = length_in_minutes(length)
 
-			m.reply "YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s 05|\u000F http://youtu.be/%s\u000F 05|\u000F More results: %s\u000F" % 
+			m.reply "YouTube 05|\u000F %s 05|\u000F %s 05|\u000F %s views 05|\u000F %s 05|\u000F https://youtu.be/%s\u000F 05|\u000F More results: %s\u000F" % 
 			[name, length, views, rating, id, page_url]
 		rescue
 			m.reply "YouTube 05|\u000F Error: Could not find video"
