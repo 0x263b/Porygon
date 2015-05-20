@@ -19,6 +19,7 @@ require 'date'
 require 'time'
 require 'cgi'
 require "ruby-duration"
+require 'timeout'
 
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
@@ -124,11 +125,20 @@ end
 # URL shortener
 # Note: short URLs expire after 14 days
 def shorten_url(long)
-	url = URI.parse('http://mnn.im/s')
-	http = Net::HTTP.new(url.host, url.port)
-	response, body = http.post(url.path, long)
-	parsed = JSON.parse(response.body)
-	return parsed["url"]["short_url"]
+	begin
+		complete_results = Timeout.timeout(3) do
+			url = URI.parse('http://mnn.im/s')
+			http = Net::HTTP.new(url.host, url.port)
+			response, body = http.post(url.path, long)
+			parsed = JSON.parse(response.body)
+			return parsed["url"]["short_url"]
+		end
+	rescue Timeout::Error
+		url = URI.parse("https://api.waa.ai/shorten?url=#{long}")
+		response = Net::HTTP.get(url)
+		parsed = JSON.parse(response)
+		return parsed["data"]["url"]
+	end
 end
 
 
